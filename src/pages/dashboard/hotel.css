@@ -1,0 +1,9 @@
+/* Hide horizontal scrollbar but allow scrolling */
+.overflow-y-auto::-webkit-scrollbar {
+    /* display: none; */
+}
+
+.overflow-y-auto {
+    /* -ms-overflow-style: none;  
+    scrollbar-width: none;      */
+}
