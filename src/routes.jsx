@@ -19,6 +19,8 @@ import { MdMeetingRoom } from "react-icons/md";
 import { MdRestaurant } from "react-icons/md";
 import { LuPackagePlus } from "react-icons/lu";
 import Loyalty from "./pages/dashboard/Loyalty";
+import Brands from "./pages/dashboard/Brands";
+import { TbBrandDatabricks } from "react-icons/tb";
 
 
 const icon = {
@@ -41,6 +43,12 @@ export const routes = [
         name: "profile",
         path: "/profile",
         element: <Profile />,
+      },
+      {
+        icon: <TbBrandDatabricks {...icon} />,
+        name: "Brands",
+        path: "/brands",
+        element: <Brands/>,
       },
       // {
       //   icon: <TableCellsIcon {...icon} />,
@@ -106,31 +114,26 @@ export const routes = [
   },
 
 
-  {
-    title: "Auth",
-    layout: "auth",
-    pages: [
-      // {
-      //   icon: <LuPackagePlus {...icon} />,
-      //   name: "Manage Loyalty",
-      //   path: "/loyalty",
-      //   element: <Loyalty />,
-      // },
-      {
-        icon: <ServerStackIcon {...icon} />,
-        name: "sign in",
-        path: "/sign-in",
-        element: <SignIn />,
-      },
+  // {
+  //   title: "Auth",
+  //   layout: "auth",
+  //   pages: [
+     
+  //     {
+  //       icon: <ServerStackIcon {...icon} />,
+  //       name: "sign in",
+  //       path: "/sign-in",
+  //       element: <SignIn />,
+  //     },
       
-      {
-        icon: <RectangleStackIcon {...icon} />,
-        name: "sign up",
-        path: "/sign-up",
-        element: <SignUp />,
-      },
-    ],
-  },
+  //     {
+  //       icon: <RectangleStackIcon {...icon} />,
+  //       name: "sign up",
+  //       path: "/sign-up",
+  //       element: <SignUp />,
+  //     },
+  //   ],
+  // },
 ];
 
 export default routes;

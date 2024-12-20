@@ -325,7 +325,7 @@ export default function AddRoom() {
                                                     </div>
                                                 )}
 
-                                                <div className="flex gap-5">
+                                                <div className="flex gap-5 mb-3">
                                                     {/* Alt Text Input */}
                                                     <Input
                                                         size="sm"
