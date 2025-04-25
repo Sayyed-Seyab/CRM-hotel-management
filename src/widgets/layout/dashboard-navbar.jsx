@@ -1,4 +1,4 @@
-import { useLocation, Link } from "react-router-dom";
+import { useLocation, Link, useNavigate } from "react-router-dom";
 import {
   Navbar,
   Typography,
@@ -27,16 +27,135 @@ import {
   setOpenConfigurator,
   setOpenSidenav,
 } from "@/context";
-import { useContext } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import { StoreContext } from "@/context/context";
-
 export function DashboardNavbar() {
-  const { url,language, setLanguage } = useContext(StoreContext);
-  const [controller, dispatch] = useMaterialTailwindController();
-  const { fixedNavbar, openSidenav } = controller;
+  const navigate = useNavigate();
+  const {
+    url,
+    language,
+    setLanguage,
+    cities,
+    setCities,
+    fetchCities,
+    hotels,
+    setHotels,
+    fetchHotels,
+    Rooms,
+    setRooms,
+    fetchRooms,
+    Restaurants,
+    setRestaurants,
+    fetchrestaurants,
+    loyalty,
+    setLoyalty,
+    fetchloyalty,
+    admin,
+    setadmin,
+  } = useContext(StoreContext);
+  
+  const [controller] = useMaterialTailwindController();
+  const { fixedNavbar } = controller;
   const { pathname } = useLocation();
   const [layout, page] = pathname.split("/").filter((el) => el !== "");
+  
+  const Dashboardcities = pathname.startsWith("/dashboard/cities");
+  const dashbaordhotels = pathname.startsWith("/dashboard/hotels");
+  const dashboardrooms = pathname.startsWith("/dashboard/rooms");
+  const dashboardrestaurants = pathname.startsWith("/dashboard/restaurants");
+  const dashbaordloyalty = pathname.startsWith("/dashboard/loyalty");
+  
+  const filterdata = (e) => {
+    const value = e.target.value.toLowerCase();
+  
+    if (Dashboardcities) {
+      if (value) {
+        const search = cities.filter((item) =>
+          item.name.toLowerCase().includes(value)
+        );
+        setCities(search);
+      } else {
+        fetchCities();
+      }
+    } else if (dashbaordhotels ) {
+      if (value) {
+        const search = hotels.filter((item) =>
+          item.name.toLowerCase().includes(value)
+        );
+        if(search){
+            setHotels(search)
+        }
+        
+        const searchByCity = cities.filter((item)=> item.name.toLowerCase().includes(value))
+        if(searchByCity){
+          const CityHotels = hotels.filter((hotel)=> hotel.city === searchByCity[0]._id) 
+         
+             setHotels(CityHotels)
+          }
+        // setHotels(search);
+        // if (search) {
+        //   const room = Rooms.filter((room) => room.hotelid === search._id);
+        //   setRooms(room);
+        // } else {
+        //   setRooms([]);
+        // }
+       
+      } else {
+        fetchHotels();
+      }
+    } else if (dashboardrooms) {
+      if (value) {
+        const hotelMatch = hotels.find((hotel) =>
+          hotel.name.toLowerCase().includes(value)
+        );
+        if (hotelMatch) {
+          const search = Rooms.filter((room) => room.hotel === hotelMatch._id);
+          setRooms(search);
+        } else {
+          setRooms([]);
+        }
+      } else {
+        fetchRooms();
+      }
+    } else if (dashboardrestaurants) {
+      if (value) {
+        const hotelMatch = hotels.find((hotel) =>
+          hotel.name.toLowerCase().includes(value)
+        );
+        if (hotelMatch) {
+          const search = Restaurants.filter(
+            (restaurant) => restaurant.hotel === hotelMatch._id
+          );
+          setRestaurants(search);
+        } else {
+          setRestaurants([]);
+        }
+      } else {
+        fetchrestaurants();
+      }
+    } else if (dashbaordloyalty) {
+      if (value) {
+        const search = loyalty.filter((item) =>
+          item.name.toLowerCase().includes(value)
+        );
+        setLoyalty(search);
+      } else {
+        fetchloyalty();
+      }
+    }
+  };
 
+  const logout = ()=>{
+    // Clear localStorage
+  localStorage.removeItem('adminData');
+
+  // Optionally reset state (if using React state for admin data)
+  setadmin(null); // Ensure setadmin is accessible in your component
+
+  // Redirect to login page
+  navigate('/'); // Ensure navigate is initialized using useNavigate()
+  }
+  
   return (
     <Navbar
       color={fixedNavbar ? "white" : "transparent"}
@@ -89,7 +208,10 @@ export function DashboardNavbar() {
             </Select>
             </div>
           <div className="mr-auto md:mr-4 md:w-56">
-            <Input label="Search" />
+            <Input 
+             label="Search"
+             
+             onChange={filterdata} />
           </div>
           <IconButton
             variant="text"
@@ -99,6 +221,11 @@ export function DashboardNavbar() {
           >
             <Bars3Icon strokeWidth={3} className="h-6 w-6 text-blue-gray-500" />
           </IconButton>
+
+
+          <div>
+           {admin ?  <Button onClick={logout}>LOGOUT</Button> : null}
+          </div>
 
           {/* <Link to="/auth/sign-in">
             <Button

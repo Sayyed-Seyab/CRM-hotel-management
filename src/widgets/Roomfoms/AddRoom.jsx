@@ -101,7 +101,7 @@ export default function AddRoom() {
 
 
         // Append gallery
-        roomData.gallery.forEach((item, index) => {
+       gallery.forEach((item, index) => {
             formdata.append(`galleryalt_${index}`, item.alt);
             formdata.append(`gallerycaption_[${index}`, item.caption);
 
@@ -123,6 +123,7 @@ export default function AddRoom() {
                 formdata,
                 { headers: { "Content-Type": "multipart/form-data" } }
             );
+            console.log(response)
             if (response.data.success) {
                 SetTostMsg(response.data.message);
                 navigate('/dashboard/rooms')
@@ -179,7 +180,7 @@ export default function AddRoom() {
                                    <div>
                                    <label className="block text-gray-700 font-medium mb-2 ">Amenties</label>
                                    {amenities.map((item, index) => (
-                                        <div key={index} className="flex gap-4">
+                                        <div key={index} className="flex gap-4 mb-3">
                                             <Input
                                                 size="sm"
                                                 label="Ameniti"
@@ -214,6 +215,7 @@ export default function AddRoom() {
                                     <label className="block text-gray-700 font-medium mb-2">Select Hotel</label>
                                     <select
                                         name="hotelid"
+                                        value={roomData.hotelid ||  ""}
                                         onChange={handleChange}
                                         className="w-full border  text-gray-700 font-medium border-gray-300 rounded-lg px-4 py-2 bg-white focus:ring focus:ring-gray-300"
                                         required
@@ -393,7 +395,7 @@ export default function AddRoom() {
                                     وسائل الراحة
                                     </label>
                                     {amenities.map((item, index) => (
-                                        <div key={index} className="flex gap-4 mb-4">
+                                        <div key={index} className="flex gap-4 mb-3">
                                             <Input
                                                 size="sm"
                                                 label="Arabic"

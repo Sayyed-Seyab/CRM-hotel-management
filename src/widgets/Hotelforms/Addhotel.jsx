@@ -25,7 +25,7 @@ export function Addhotel() {
     const { url, agentid, cities, SetTostMsg } = useContext(StoreContext)
     console.log(cities)
     const brand = {
-        agentid: "673ef93329933f9da9d46d2a"
+        agentid: "67657595591b7c8a9580623b"
     }
     const [gallery, setGallery] = useState([
         { galleryimage: "", alt: "", caption: "" },
@@ -48,7 +48,7 @@ export function Addhotel() {
         },
         {
             policyheading: "No Show Policy",
-            arabicpoliylabel: "سياسة عدم العرض",
+            arabicpoliylabel: "سياسة عدم الحضور",
             arabicpolicydescription: "",
             policydescription: "",
         },
@@ -58,7 +58,10 @@ export function Addhotel() {
         longitude: 73.0479, // Default location: Islamabad
     });
     const [formData, setFormData] = useState({
-        agentid: brand.agentid,
+        agentid: agentid,
+        bookingengineid: "",
+        comment: '',
+        arabiccomment: "",
         city: "",
         name: "",
         arabicname: "",
@@ -86,7 +89,7 @@ export function Addhotel() {
         metainfo: "",
     });
     const [selectedIndices, setSelectedIndices] = useState([]);
-   const navigate = useNavigate()
+    const navigate = useNavigate()
 
     console.log(Facilities)
 
@@ -142,6 +145,8 @@ export function Addhotel() {
         const formdata = new FormData();
         console.log(formData.agentid)
         formdata.append("agentid", formData.agentid);
+        formdata.append("bookingengineid", formData.bookingengineid);
+        formdata.append("comment", `${formData.comment} | ${formData.arabiccomment}`);
         formdata.append("city", formData.city);
         formdata.append("name", `${formData.name} | ${formData.arabicname}`);
         formdata.append("starrating", formData.starrating)
@@ -161,7 +166,7 @@ export function Addhotel() {
 
 
         // Append gallery
-       gallery.forEach((item, index) => {
+        gallery.forEach((item, index) => {
             formdata.append(`galleryalt_${index}`, item.alt);
             formdata.append(`gallerycaption_[${index}`, item.caption);
 
@@ -174,7 +179,7 @@ export function Addhotel() {
 
         // Append facilities
         formData.facilities.forEach((item, index) => {
-            formdata.append(`facility_${index}`, `${item.facility} | ${item.arabicfacility}`);
+            formdata.append(`facility_${index}`, item.facility);
             formdata.append(`facilityalt_${index}`, item.alt);
             formdata.append(`facilitycaption_${index}`, item.caption);
 
@@ -204,6 +209,7 @@ export function Addhotel() {
                 formdata,
                 { headers: { "Content-Type": "multipart/form-data" } }
             );
+            console.log(response)
             if (response.data.success) {
                 SetTostMsg(response.data.message);
                 navigate('/dashboard/hotels')
@@ -228,23 +234,41 @@ export function Addhotel() {
                     return [...prevIndices, index];
                 }
             });
+
             // Fetch the image and create a File object
             const response = await fetch(imageUrl);
             const blob = await response.blob();
-            const extension = blob.type.split("/")[1]; // Get file extension
-            const file = new File([blob], `${imageName}.${extension}`, { type: blob.type });
+
+            // Extract the file extension and sanitize the MIME type
+            let extension = blob.type.split("/")[1]; // Get file extension
+            if (extension.includes("+")) {
+                extension = extension.split("+")[0]; // Remove "+xml" or similar
+            }
+
+            // Sanitize the MIME type (remove "+xml")
+            let sanitizedType = blob.type.split("+")[0];
+
+            // Create the File object with the sanitized type and correct extension
+            const file = new File([blob], `${imageName}.${extension}`, { type: sanitizedType });
+            console.log(file);
+
 
             setFormData((prevFormData) => {
-                const facilityExists = prevFormData.facilities.some(
+                // Filter out any empty facilities objects
+                const filteredFacilities = prevFormData.facilities.filter(
+                    (facility) => facility.facility !== "" || facility.arabicfacility !== "" || facility.facilityimage !== ""
+                );
+
+                const facilityExists = filteredFacilities.some(
                     (facility) => facility.facility === `${imageName} | ${arabicName}`
                 );
 
                 const newFacilities = facilityExists
-                    ? prevFormData.facilities.filter(
+                    ? filteredFacilities.filter(
                         (facility) => facility.facility !== `${imageName} | ${arabicName}`
                     )
                     : [
-                        ...prevFormData.facilities,
+                        ...filteredFacilities,
                         {
                             facility: `${imageName} | ${arabicName}`,
                             arabicfacility: arabicName,
@@ -259,7 +283,8 @@ export function Addhotel() {
         } catch (error) {
             console.error("Error handling image click:", error);
         }
-    }
+    };
+
 
 
 
@@ -267,7 +292,7 @@ export function Addhotel() {
     useEffect(() => {
         console.log(formData)
         console.log(gallery)
-        console.log(policies)
+        console.log(formData.facilities)
 
     }, [formData, gallery, policies, agentid, location])
 
@@ -406,9 +431,19 @@ export function Addhotel() {
                             </div>
                             <hr className="border-b-2 border-gray-700" />
 
-
+                            <div>
+                                <label className="block text-gray-700 font-medium mb-2">Comment:</label>
+                                <textarea
+                                    name="comment"
+                                    onChange={handleInputChange}
+                                    rows="4"
+                                    className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring focus:ring-gray-300"
+                                ></textarea>
+                            </div>
 
                         </div>
+
+
 
                         {/* Arabic form inputs */}
                         {/* Arabic form inputs */}
@@ -521,6 +556,17 @@ export function Addhotel() {
                                     </div>
                                 </div>
                                 <hr className="border-b-2 border-gray-700" />
+
+
+                                <div>
+                                    <label className="block text-gray-700 font-medium mb-2">تعليق</label>
+                                    <textarea
+                                        name="arabiccomment"
+                                        onChange={handleInputChange}
+                                        rows="4"
+                                        className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring focus:ring-gray-300"
+                                    ></textarea>
+                                </div>
                             </div>
                         </div>
 
@@ -528,16 +574,16 @@ export function Addhotel() {
                     </div>
 
                     {/* Default facilities  */}
-                    <div className="flex gap-3 text-center">
+                    <div className="flex flex-wrap gap-3 justify-center">
                         {Facilities.map((item, index) => (
                             <div
                                 key={index}
                                 onClick={() => handleImageClick(item.img, item.name, item.arabicname, index)} // Pass image URL and name
-                                className={`flex flex-col w-40 items-center gap-2 border-2 p-2 rounded-md ${selectedIndices.includes(index) ? "bg-gray-500" : "" // Apply gray bg for selected items
+                                className={`flex flex-wrap flex-col w-28 items-center gap-2 border-2 p-2 rounded-md ${selectedIndices.includes(index) ? "bg-gray-500" : "" // Apply gray bg for selected items
                                     } hover:bg-blue-50 cursor-pointer`}
                             >
                                 {/* Image Wrapper */}
-                                <div className="flex justify-center items-center">
+                                <div className="flex  justify-center items-center">
                                     <img
                                         src={item.img} // Assuming `item.img` contains the image URL
                                         alt={item.name} // Assuming `item.name` contains the facility name
@@ -579,7 +625,7 @@ export function Addhotel() {
                                         value={location.latitude}
                                         onChange={handleLocationChange}
                                         required
-                                       
+
                                     />
                                     <Input
                                         size="lg"
@@ -589,7 +635,7 @@ export function Addhotel() {
                                         value={location.longitude}
                                         onChange={handleLocationChange}
                                         required
-                                       
+
                                     />
                                 </div>
                             </div>
@@ -599,6 +645,7 @@ export function Addhotel() {
                                 <label className="block text-gray-700 font-medium mb-2">Select City:</label>
                                 <select
                                     name="city"
+                                    value={formData.city || ""} // Controlled value
                                     onChange={handleInputChange}
                                     className="w-full text-gray-700 border border-gray-300 rounded-lg px-4 py-2 bg-white focus:ring focus:ring-gray-300"
                                     required
@@ -625,28 +672,28 @@ export function Addhotel() {
                                     {gallery.map((item, index) => (
                                         <div key={index} className="grid grid-cols-1 gap-4 mb-3 ">
 
-                                           <div>
-                                           <label className="block w-full p-3 text-sm text-gray-500 border rounded-lg cursor-pointer bg-gray-50 hover:bg-gray-100 focus:outline-none">
-                                                <input
-                                                    type="file"
-                                                    accept="image/*"
-                                                    multiple
-                                                    onChange={(e) =>
-                                                        handleDynamicChange(
-                                                            index,
-                                                            "galleryimage",
-                                                            e.target.files[0],
-                                                            setGallery,
-                                                            gallery
-                                                        )
-                                                    }
-                                                    className="hidden "
-                                                />
-                                                <span className="text-gray-700 ">
-                                                Upload Image (1000 x 500 px)
-                                                </span>
-                                            </label>
-                                           </div>
+                                            <div>
+                                                <label className="block w-full p-3 text-sm text-gray-500 border rounded-lg cursor-pointer bg-gray-50 hover:bg-gray-100 focus:outline-none">
+                                                    <input
+                                                        type="file"
+                                                        accept="image/*"
+                                                        multiple
+                                                        onChange={(e) =>
+                                                            handleDynamicChange(
+                                                                index,
+                                                                "galleryimage",
+                                                                e.target.files[0],
+                                                                setGallery,
+                                                                gallery
+                                                            )
+                                                        }
+                                                        className="hidden "
+                                                    />
+                                                    <span className="text-gray-700 ">
+                                                        Upload Image (1000 x 500 px)
+                                                    </span>
+                                                </label>
+                                            </div>
 
                                             <div className="w-80 mb-4">
                                                 {/* Image Preview */}
@@ -751,6 +798,21 @@ export function Addhotel() {
                                 />
                             </div>
 
+                            {/* Minum rate */}
+                            <div className="">
+                                <label className="block text-gray-700 font-medium mb-2">Booking Engine Id:</label>
+                                <Input
+                                    label="bookingengineid"
+                                    name="bookingengineid"
+                                    size="lg"
+                                    onChange={handleInputChange}
+                                    required
+                                    className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring focus:ring-gray-300"
+                                />
+                            </div>
+
+
+
                             {/* Other Fields */}
                             {/* <div>
     <label className="block text-gray-700 font-medium mb-2">Minimum Rate:</label>
@@ -816,7 +878,7 @@ export function Addhotel() {
                                     className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring focus:ring-gray-300"
                                 ></textarea>
                             </div>
-                <div className="flex flex-col space-y-2 sm:flex-row sm:items-center sm:space-x-4">
+                            <div className="flex flex-col space-y-2 sm:flex-row sm:items-center sm:space-x-4">
                                 <label className="block text-gray-700 font-medium">Featured:</label>
                                 <div className="flex items-center space-x-4">
                                     <label className="flex items-center space-x-2">
@@ -847,7 +909,7 @@ export function Addhotel() {
 
                             <div className="grid grid-cols-1">
                                 <Button type="submit" className="bg-gray-900 w-full mt-5">
-                                    Add Hotel
+                                    ADD HOTEL
                                 </Button>
                             </div>
                         </div>

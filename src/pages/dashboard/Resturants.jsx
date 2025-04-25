@@ -23,7 +23,7 @@ import AlertMsgRes from "@/widgets/ResturentFroms/AlerMsgRes";
 
 
 export function Resturants() {
-    const { Restaurants, cities, cuisineId, setCuisisneID, diningId, setDiningId, hotels, fetchHotels, url, fetchrestaurants, language, setLanguage, EditCity, SetEditrestaurant, tostMsg, SetTostMsg, RestaurantAllLang } = useContext(StoreContext);
+    const {restaurantloading, setloading, Restaurants, cities, cuisineId, setCuisisneID, diningId, setDiningId, hotels, fetchHotels, url, fetchrestaurants, language, setLanguage, EditCity, SetEditrestaurant, tostMsg, SetTostMsg, RestaurantAllLang } = useContext(StoreContext);
     const navigate = useNavigate();
     const [Cities, setCities] = useState([]); // State for cities data
     const [currentPage, setCurrentPage] = useState(1);
@@ -33,7 +33,7 @@ export function Resturants() {
     const [RestaurantId, SetRestaurantid] = useState('')
 
 
-    const rowsPerPage = 5; // Number of rows per page
+    const rowsPerPage = 10; // Number of rows per page
     const agentid = "673ef93329933f9da9d46d2a"; // Replace with dynamic agentid if needed
 
 
@@ -86,6 +86,7 @@ export function Resturants() {
         console.log(RestaurantAllLang)
         const findrestaurant = RestaurantAllLang.filter((item) => item._id === restaurant._id)
         SetEditrestaurant(findrestaurant)
+        setloading(false)
         navigate("/dashboard/update-restaurant")
     }
 
@@ -123,6 +124,15 @@ export function Resturants() {
         navigate('/dashboard/cuisines')
     }
 
+    if (restaurantloading) {
+        return (
+          <div className="flex items-center justify-center h-screen">
+            <div className="animate-spin rounded-full h-12 w-12 border-t-4 border-blue-500 border-solid"></div>
+          </div>
+        );
+        
+      }
+
 
     return (
 
@@ -151,7 +161,17 @@ export function Resturants() {
                     </div>
                 </CardHeader>
                 <CardBody className="max-h-[415px] overflow-y-auto px-0 pt-0 pb-2">
-                    <table className="w-full min-h-[0px] table-auto">
+
+                     {currentData.length === 0 ? (
+                                    <Typography
+                                        className="text-center text-gray-500 font-medium py-8"
+                                        variant="h6"
+                                    >
+                                        No Restaurants available.
+                                    </Typography>
+                                ) : (
+                                    <>
+                                     <table className="w-full min-h-[0px] table-auto">
                         <thead>
                             <tr>
                                 {["Image", "Name", "Hotel", "Description", "Action"].map((header) => (
@@ -212,10 +232,13 @@ export function Resturants() {
                                             </Typography>
                                         </td>
 
-                                        <td className="px-5 border-b border-blue-gray-50 min-h-[100px]">
+                                        <td className="px-5 border-b border-blue-gray-50 w-80 min-h-[100px]">
+                                            <div className="overflow-y-auto cursor-pointer max-h-[50px]">
                                             <Typography variant="small" color="blue-gray" className="cursor-pointer text-xs font-normal text-blue-gray-500">
                                                 {restaurant.description}
                                             </Typography>
+                                            </div>
+                                            
                                         </td>
 
                                         {/* facilities */}
@@ -290,6 +313,8 @@ export function Resturants() {
                             Next
                         </Typography>
                     </div>
+                                    </>
+                       )}
                 </CardBody>
             </Card>
         </div>

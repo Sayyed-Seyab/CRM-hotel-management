@@ -15,8 +15,9 @@ import { StoreContext } from "@/context/context";
 import { useNavigate } from "react-router-dom";
 
 export default function UpdateRoom() {
-    const { url, agentid, SetTostMsg, hotels, Editroom, cities } = useContext(StoreContext);
+    const {loading, url, agentid, SetTostMsg, hotels, Editroom, cities } = useContext(StoreContext);
     const navigate = useNavigate();
+   
 
 
     const [gallery, setGallery] = useState([
@@ -63,10 +64,11 @@ export default function UpdateRoom() {
     });
 
     useEffect(() => {
+      
         if (Editroom) {
             console.log(Editroom);
             setRoomData({
-                agentid: Editroom[0].agentid || "673ef93329933f9da9d46d2a",
+                agentid: Editroom[0].agentid || agentid,
                 hotelid: Editroom[0].hotelid || "",
                 name: Editroom[0].name?.split(" | ")[0] || "",
                 arabicName: Editroom[0].name?.split(" | ")[1] || "",
@@ -85,13 +87,13 @@ export default function UpdateRoom() {
                 }) || []
             )
 
-            // setGallery(
-            //     Editroom[0].gallery?.map((item) => ({
-            //         galleryimage: item.galleryimage, // Set to null initially; will be updated if a file is uploaded
-            //         alt: item.alt || "",
-            //         caption: item.caption || "",
-            //     })) || []
-            // );
+            setGallery(
+                Editroom[0].gallery?.map((item) => ({
+                    galleryimage: item.galleryimage, // Set to null initially; will be updated if a file is uploaded
+                    alt: item.alt || "",
+                    caption: item.caption || "",
+                })) || []
+            );
         }
 
     }, [Editroom]);
@@ -149,8 +151,8 @@ export default function UpdateRoom() {
                 formdata,
                 { headers: { "Content-Type": "multipart/form-data" } }
             );
+          
             if (response.data.success) {
-
                 SetTostMsg(response.data.message);
                 navigate("/dashboard/rooms");
             } else {
@@ -167,7 +169,18 @@ export default function UpdateRoom() {
     useEffect(() => {
         console.log(roomData)
         console.log(gallery)
-    }, [roomData, gallery])
+    }, [roomData, gallery, loading])
+
+    if (loading) {
+        navigate("/dashboard/rooms");
+        return (
+          <div className="flex items-center justify-center h-screen">
+            <div className="animate-spin rounded-full h-12 w-12 border-t-4 border-blue-500 border-solid"></div>
+          </div>
+        );
+
+        
+      }
 
     return (
         <div>
@@ -201,7 +214,7 @@ export default function UpdateRoom() {
                                 <div>
                                     <label className="block text-gray-700 font-medium mb-2 ">Amenties</label>
                                     {amenities.map((item, index) => (
-                                        <div key={index} className="flex gap-4">
+                                        <div key={index} className="flex gap-4 mb-3">
                                             <Input
                                                 size="sm"
                                                 label="Ameniti"
@@ -236,13 +249,13 @@ export default function UpdateRoom() {
                                 </label>
                                 <select
                                     name="hotelid"
-                                    value={roomData.hotelid}
+                                    value={roomData.hotelid || ""}
                                     onChange={handleChange}
                                     className="w-full border border-gray-300 rounded-lg px-4 py-2 bg-white focus:ring focus:ring-gray-300"
                                     required
                                 >
-                                    <option value="" disabled>
-                                        Select Hotel
+                                    <option className="text-gray-700" value="" disabled>
+                                        Select a Hotel
                                     </option>
                                     {hotels.map((hotel, index) => (
                                         <option key={index} value={hotel._id}>
@@ -402,7 +415,7 @@ export default function UpdateRoom() {
                             </Typography>
 
                             <div>
-                                <label className="block text-gray-700 font-medium mb-2">اسم</label>
+                                <label className="block text-gray-700 font-medium mb-4">اسم</label>
                                 <Input
                                     size="lg"
                                     label="اسم"
@@ -418,7 +431,7 @@ export default function UpdateRoom() {
                                         وسائل الراحة
                                     </label>
                                     {amenities.map((item, index) => (
-                                        <div key={index} className="flex gap-4 mb-4">
+                                        <div key={index} className="flex gap-4 mb-3">
                                             <Input
                                                 size="sm"
                                                 label="وسائل الراحة"

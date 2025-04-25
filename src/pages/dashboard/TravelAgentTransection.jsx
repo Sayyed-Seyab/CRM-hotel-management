@@ -18,10 +18,11 @@ import AddCityModal from "@/widgets/cityform/Addcity";
 import UpdateCityModal from "@/widgets/cityform/Updatecity";
 import Alertmsg from "@/widgets/cityform/Alertmsg";
 import { toast } from "react-toastify";
+import moment from "moment";
 
 
-export function Cities() {
-    const {cityloading, setloading,admin, fetchCities,cities,cityDataAllLang, setcityDataAllLang, setCities, url, language, setLanguage, EditCity, SetEditCity, tostMsg, SetTostMsg } = useContext(StoreContext);
+export function TravelAgentTransection() {
+    const {admin, transcloading, setloading, FilteredTravelAgents,fetchTravelAgent, fetchTravelAgentTransection,TravelAgentTransection,SetTravelAgentTransection, setcityDataAllLang, setCities, url, language, setLanguage, EditCity, SetEditCity, tostMsg, SetTostMsg } = useContext(StoreContext);
     const navigate = useNavigate();
     const [currentPage, setCurrentPage] = useState(1);
     const [isAddCityModalOpen, setIsAddCityModalOpen] = useState(false);
@@ -30,11 +31,11 @@ export function Cities() {
     const [CityId, SetCityId] = useState('')
 
 
-    const rowsPerPage = 10; // Number of rows per page
+    const rowsPerPage = 20; // Number of rows per page
    
 
     useEffect(() => {
-        fetchCities()
+        fetchTravelAgentTransection()
         if (tostMsg !== null) {
             // Show toast and reset state after a delay
             const toastTimeout = setTimeout(() => {
@@ -52,51 +53,50 @@ export function Cities() {
             };
         }
     }, [ language,]);
-   
 
 
     // Pagination logic
-    const totalPages = Math.ceil(cities.length / rowsPerPage);
+    const totalPages = Math.ceil(TravelAgentTransection.length / rowsPerPage);
     const startIndex = (currentPage - 1) * rowsPerPage;
-    const currentData = cities.slice(startIndex, startIndex + rowsPerPage);
-
+    const currentData = TravelAgentTransection.slice(startIndex, startIndex + rowsPerPage);
+console.log(currentData)
     const handlePageChange = (page) => {
         if (page >= 1 && page <= totalPages) {
             setCurrentPage(page);
         }
     };
 
-    const handleAddCity = () => {
+    const handleAddTransection = () => {
 
-        navigate("/dashboard/add-city");
+        navigate("/dashboard/add-transection");
     };
-    const handleUpdateCity = (city) => {
-        setIsUpdateCityModalOpen(true)
-        const findcity = cityDataAllLang.filter((item) => item._id === city._id)
-        SetEditCity(findcity)
-        setloading(false)
-        navigate("/dashboard/update-city")
-    }
+    // const handleUpdateCity = (city) => {
+    //     setIsUpdateCityModalOpen(true)
+    //     const findcity = cityDataAllLang.filter((item) => item._id === city._id)
+    //     SetEditCity(findcity)
+    //     setloading(false)
+    //     navigate("/dashboard/update-city")
+    // }
 
-    const Dlttcity = (city) => {
-        //fetch all hotels filter with cityid if length > 0 then show modal
-        SetCityId(city._id)
-        setIsDltCityModalOpen(true)
-    }
-    const handleDelete = async (city) => {
-        try {
+    // const Dlttcity = (city) => {
+    //     //fetch all hotels filter with cityid if length > 0 then show modal
+    //     SetCityId(city._id)
+    //     setIsDltCityModalOpen(true)
+    // }
+    // const handleDelete = async (city) => {
+    //     try {
 
-            const response = await axios.delete(`${url}/api/admin/deletecity/${CityId}`)
-            if (response.data.success) {
-                toast.success(response.data.message)
-                setIsDltCityModalOpen(false)
-                fetchCities();
+    //         const response = await axios.delete(`${url}/api/admin/deletecity/${CityId}`)
+    //         if (response.data.success) {
+    //             toast.success(response.data.message)
+    //             setIsDltCityModalOpen(false)
+    //             fetchCities();
 
-            }
-        } catch (error) {
-            toast.error(response.data.message)
-        }
-    }
+    //         }
+    //     } catch (error) {
+    //         toast.error(response.data.message)
+    //     }
+    // }
 
     
   const SecretKey = 'mySecretKey123'; // Replace with your actual secret key
@@ -114,54 +114,9 @@ export function Cities() {
           return null; // Handle encryption error
       }
     } 
-    const signup = async()=>{
-        const data =   {
-            name: "xyz",
-            agentid:"67287e88dd88b4b9ab344f80",
-            email: "sayyed.seyab555@gmail.com",
-            address: "123 Main Street",
-            phone: 123456788760,
-            city: "Islamabad",
-            country: "Pakistan",
-            govtid: 1234568987,
-            password: "Xyz12345,",
-            configpassword: "Xyz12345,",
-            role: "user",
-            accountstatus: "activate",
-            source:"Chrome"
-            
-          }
 
-      
-          try {
-            const agentid = '67657595591b7c8a9580623b';
-            const password = 'Admin123,' // Replace with actual Agent ID
-           const encryptedPassword = encrypt(password, SecretKey);
-            const response = await axios.post('http://localhost:4000/api/user/signup', data, {
-              headers: {
-                'Content-Type': 'multipart/form-data',
-                password: encryptedPassword,
-                agentid: agentid,
-              },
-              withCredentials: true, // Enable credentials
-            });
-            if(response.data.success){
-            //   setLoading(false);
-              console.log(response.data);
-              alert(response.data.message)
-            }else{
-              console.log(response.data)
-            }
-            //   alert('Home Page added successfully');
-           
-          } catch (error) {
-            // setLoading(false);
-            console.error('Error:', error.response || error);
-            alert('Failed to add Home Page');
-          }
-        }
-    https://crmapi.jawartaibah.com
-    if (cityloading) {
+   
+    if (transcloading) {
         return (
           <div className="flex items-center justify-center h-screen">
             <div className="animate-spin rounded-full h-12 w-12 border-t-4 border-blue-500 border-solid"></div>
@@ -183,7 +138,7 @@ export function Cities() {
                     className="mb-8 p-6 flex justify-between"
                 >
                     <Typography variant="h6" color="white">
-                        Cities Table
+                       Transections Table
                     </Typography>
 
                     <div className="flex items-center gap-4">
@@ -191,10 +146,10 @@ export function Cities() {
                         <Button
                             variant="text"
                             color="light-gray"
-                            onClick={handleAddCity}
+                            onClick={handleAddTransection}
                             className="bg-gray-500  hover:bg-gray-600 text-white hidden items-center gap-1 px-4 xl:flex normal-case"
                         >
-                            ADD CITY
+                            ADD TRANSECTION
                         </Button>
                     </div>
                 </CardHeader>
@@ -211,7 +166,7 @@ export function Cities() {
                                     <table className="w-full min-h-[0px] table-auto">
                         <thead>
                             <tr>
-                                {["Image", "Name", "Description", "Action"].map((header) => (
+                                {["Name","Email", "Amount",  "Ref-ID","type", "Date", "Added-by"].map((header) => (
                                     <th
                                         key={header}
                                         className="border-b border-blue-gray-50 py-3 px-5 text-left"
@@ -227,57 +182,76 @@ export function Cities() {
                             </tr>
                         </thead>
                         <tbody>
-                            {currentData.map((city, index) => (
+                            {currentData.map((transc, index) => {
+                                //  const addedby = TravelAgentTransection.find((t) => t.addedby === admin.value.id); 
+                               return (
                                 <tr key={index}>
-                                    {/* Image */}
-                                    <td className="px-5 py-2 border-b border-blue-gray-50">
-                                        <Avatar
-                                            src={city.cityimage ? `${url}/Images/${city.cityimage}` : "/path/to/placeholder.jpg"}
-                                            alt={city.name}
-                                            size="lg"
-                                            variant="rounded"
-                                            className="w-20"
+                                {/* Image */}
+                                <td className="px-5 py-2 border-b border-blue-gray-50">
+                                <Typography variant="small" color="blue-gray" className="font-semibold">
+                                        {transc.user.name}
+                                    </Typography>
+                                </td>
+
+                                {/* transc Name */}
+                                <td className="px-5 border-b border-blue-gray-50 min-h-[100px]">
+                                    <Typography variant="small" color="blue-gray" className="font-semibold">
+                                        {transc.user.email}
+                                    </Typography>
+                                </td>
+
+                                {/* Description */}
+                                <td className=" px-5 border-b border-blue-gray-50  min-h-[100px]">
+                                <Typography variant="small" color="blue-gray" className="font-semibold">
+                                        {transc.amount}
+                                    </Typography>
+                                </td>
+
+                                <td className=" px-5 border-b border-blue-gray-50  min-h-[100px]">
+                                <Typography variant="small" color="blue-gray" className="font-semibold">
+                                        {transc.refid}
+                                    </Typography>
+                                </td>
+
+                                <td className=" px-5 border-b border-blue-gray-50  min-h-[100px]">
+                                <Typography variant="small" color="blue-gray" className="font-semibold">
+                                        {transc.type}
+                                    </Typography>
+                                </td>
+                                <td className=" px-5 border-b border-blue-gray-50  min-h-[100px]">
+                                <Typography variant="small" color="blue-gray" className="font-semibold">
+                                {moment(transc.createdat).format("MMMM Do YYYY, h:mm:ss a")}
+                                    </Typography>
+                                </td>
+                                <td className=" px-5 border-b border-blue-gray-50  min-h-[100px]">
+                                <Typography variant="small" color="blue-gray" className="font-semibold">
+                                        {transc.transcaddedby?.name}
+                                    </Typography>
+                                </td>
+
+                                {/* Action Icons */}
+                                {/* <td className="px-5 border-b border-blue-gray-50">
+                                    <div className="flex justify-center items-center gap-2">
+                                        <AiFillEdit
+                                            className="hover:text-blue-gray-500"
+                                            style={{ fontSize: "20px", cursor: "pointer" }}
+                                            onClick={() => handleUpdateCity(city)}
                                         />
-                                    </td>
-
-                                    {/* City Name */}
-                                    <td className="px-5 border-b border-blue-gray-50 min-h-[100px]">
-                                        <Typography variant="small" color="blue-gray" className="font-semibold">
-                                            {city.name}
-                                        </Typography>
-                                    </td>
-
-                                    {/* Description */}
-                                    <td className=" px-5 border-b border-blue-gray-50  min-h-[100px]">
-                                        <div style={{width:"35rem"}}  className="overflow-y-auto cursor-pointer max-h-[50px]">
-                                        <Typography  className=" text-xs font-normal text-blue-gray-500">
-                                            {city.description}
-                                        </Typography>
-                                        </div>
-                                    </td>
-
-                                    {/* Action Icons */}
-                                    <td className="px-5 border-b border-blue-gray-50">
-                                        <div className="flex justify-center items-center gap-2">
-                                            <AiFillEdit
-                                                className="hover:text-blue-gray-500"
-                                                style={{ fontSize: "20px", cursor: "pointer" }}
-                                                onClick={() => handleUpdateCity(city)}
-                                            />
-                                            <MdDelete
-                                                className="hover:text-blue-gray-500"
-                                                style={{ fontSize: "20px", cursor: "pointer" }}
-                                                onClick={() => Dlttcity(city)}
-                                            />
-                                            <Alertmsg
-                                                isOpen={isDltCityModalOpen}
-                                                onClose={() => setIsDltCityModalOpen(false)}
-                                                onAgree={handleDelete}
-                                            />
-                                        </div>
-                                    </td>
-                                </tr>
-                            ))}
+                                        <MdDelete
+                                            className="hover:text-blue-gray-500"
+                                            style={{ fontSize: "20px", cursor: "pointer" }}
+                                            onClick={() => Dlttcity(city)}
+                                        />
+                                        <Alertmsg
+                                            isOpen={isDltCityModalOpen}
+                                            onClose={() => setIsDltCityModalOpen(false)}
+                                            onAgree={handleDelete}
+                                        />
+                                    </div>
+                                </td> */}
+                            </tr>
+                               );
+})}
                         </tbody>
 
                     </table>
@@ -322,4 +296,5 @@ export function Cities() {
     );
 }
 
-export default Cities;
+export default TravelAgentTransection;
+

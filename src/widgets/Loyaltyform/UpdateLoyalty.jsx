@@ -8,7 +8,7 @@ import { useNavigate } from 'react-router-dom';
 import { BiSolidMessageAdd } from "react-icons/bi";
 
 export default function UpdateLoyalty() {
-    const { url, agentid, SetTostMsg, Editloyalty } = useContext(StoreContext);
+    const {loading, url, agentid, SetTostMsg, Editloyalty } = useContext(StoreContext);
     const [previewImage, setPreviewImage] = useState(null);
     const navigate = useNavigate();
 
@@ -30,34 +30,6 @@ export default function UpdateLoyalty() {
         otherfacilities: otherFacilities,
     });
 
-    // Populate data if editing
-    useEffect(() => {
-        if (Editloyalty) {
-            const facilities = Editloyalty[0]?.otherfacilities?.map((item) => ({
-                point: item.point?.split("|")[0] || "",
-                arabicpoints: item.point?.split("|")[1] || "",
-            })) || [{ point: "", arabicpoints: "" }];
-
-            setLoyaltyPlanData({
-                agentid: Editloyalty[0].agentid || agentid,
-                plantype: Editloyalty[0].plantype || "",
-                loyaltyplanimage: Editloyalty[0].loyaltyplanimage || "",
-                alt: Editloyalty[0].alt || "",
-                colorcode: Editloyalty[0].colorcode || "",
-                minstay: Editloyalty[0].minstay || "",
-                maxstay: Editloyalty[0].maxstay || "",
-                signup: Editloyalty[0].signup || "",
-                signupdiscountpercent: Editloyalty[0].signupdiscountpercent || "",
-                signupbonus: Editloyalty[0].signupbonus || "",
-                valueearned: Editloyalty[0].valueearned || "",
-                valueredeemed: Editloyalty[0].valueredeemed || "",
-                minimumpointstoredeem: Editloyalty[0].minimumpointstoredeem || "",
-                otherfacilities: facilities,
-            });
-
-            setOtherFacilities(facilities);
-        }
-    }, [Editloyalty, agentid]);
 
     const handleDynamicChange = (index, field, value) => {
         const updated = [...otherFacilities];
@@ -118,7 +90,7 @@ export default function UpdateLoyalty() {
         formdata.append('minimumpointstoredeem', loyaltyPlanData.minimumpointstoredeem);
 
         // Join English and Arabic points for each facility
-        const formattedFacilities = loyaltyPlanData.otherfacilities.map((facility) => ({
+        const formattedFacilities = otherFacilities.map((facility) => ({
             point: `${facility.point} | ${facility.arabicpoints}`, // Combine English and Arabic
         }));
 
@@ -149,7 +121,46 @@ export default function UpdateLoyalty() {
 
     useEffect(() => {
         console.log(loyaltyPlanData)
-    }, [loyaltyPlanData])
+    }, [loyaltyPlanData, loading])
+
+    if (loading) {
+        navigate("/dashboard/loyalty");
+        return (
+          <div className="flex items-center justify-center h-screen">
+            <div className="animate-spin rounded-full h-12 w-12 border-t-4 border-blue-500 border-solid"></div>
+          </div>
+        );
+        
+      }
+
+        // Populate data if editing
+    useEffect(() => {
+        if (Editloyalty) {
+            const facilities = Editloyalty[0]?.otherfacilities?.map((item) => ({
+                point: item.point?.split("|")[0] || "",
+                arabicpoints: item.point?.split("|")[1] || "",
+            })) || [{ point: "", arabicpoints: "" }];
+
+            setLoyaltyPlanData({
+                agentid: Editloyalty[0].agentid || agentid,
+                plantype: Editloyalty[0].plantype || "",
+                loyaltyplanimage: Editloyalty[0].loyaltyplanimage || "",
+                alt: Editloyalty[0].alt || "",
+                colorcode: Editloyalty[0].colorcode || "",
+                minstay: Editloyalty[0].minstay || "",
+                maxstay: Editloyalty[0].maxstay || "",
+                signup: Editloyalty[0].signup || "",
+                signupdiscountpercent: Editloyalty[0].signupdiscountpercent || "",
+                signupbonus: Editloyalty[0].signupbonus || "",
+                valueearned: Editloyalty[0].valueearned || "",
+                valueredeemed: Editloyalty[0].valueredeemed || "",
+                minimumpointstoredeem: Editloyalty[0].minimumpointstoredeem || "",
+                otherfacilities: facilities,
+            });
+
+            setOtherFacilities(facilities);
+        }
+    }, [Editloyalty, agentid]);
     return (
         <div>
             <div className="w-full max-w-4xl mt-4 mx-auto bg-white rounded-lg p-6">
@@ -316,6 +327,7 @@ export default function UpdateLoyalty() {
                             </div>
 
                             {/* Signup Bonus */}
+                            {loyaltyPlanData.plantype !== 'Silver'?  '' :(
                             <div>
                                 <label className="block text-gray-700 font-medium mb-2">
                                     Signup Bonus Eligibility
@@ -334,11 +346,12 @@ export default function UpdateLoyalty() {
                                     <option value="true">Yes</option>
                                 </select>
                             </div>
+                            )}
 
                             {/* Signup Discount */}
                             <div>
                                 <label className="block text-gray-700 font-medium mb-2">
-                                    Signup Discount (%)
+                                   {loyaltyPlanData.plantype} Discount (%)
                                 </label>
                                 <Input
                                     size="lg"
@@ -357,6 +370,7 @@ export default function UpdateLoyalty() {
                                 </Typography>
 
                                 {/* Signup Bonus Points */}
+                                {loyaltyPlanData.plantype !== 'Silver'?  '' : (
                                 <div>
                                     <label className="block text-gray-700 font-medium mb-2">
                                         Signup Bonus Points
@@ -370,21 +384,46 @@ export default function UpdateLoyalty() {
                                         onChange={handleChange}
                                     />
                                 </div>
+                                )}
 
-                                {/* Value Earned */}
-                                <div>
-                                    <label className="block text-gray-700 font-medium mb-2">
-                                        Value Earned per SAR
-                                    </label>
-                                    <Input
-                                        size="lg"
-                                        type="number"
-                                        label="Value Earned"
-                                        name="valueearned"
-                                        value={loyaltyPlanData.valueearned}
-                                        onChange={handleChange}
-                                    />
-                                </div>
+                                {/* Value Earned per SAR */}
+                                               <div>
+                                                   <label className="block text-gray-700 font-medium mb-2">Points Earned per SAR</label>
+                                                   <Input
+                                                       size="lg"
+                                                       type="number"
+                                                       label="Value Earned"
+                                                       name="valueearned"
+                                                       value={loyaltyPlanData.valueearned}
+                                                       onChange={handleChange}
+                                                   />
+                                               </div>
+                               
+                                               {/* Value Redeemed per SAR */}
+                                               <div>
+                                                   <label className="block text-gray-700 font-medium mb-2"> Per SAR points redeemed</label>
+                                                   <Input
+                                                       size="lg"
+                                                       type="number"
+                                                       label="Value Redeemed"
+                                                       name="valueredeemed"
+                                                       value={loyaltyPlanData.valueredeemed}
+                                                       onChange={handleChange}
+                                                   />
+                                               </div>
+                               
+                                               {/* Minimum Points to Redeem */}
+                                               <div>
+                                                   <label className="block text-gray-700 font-medium mb-2">Minimum Points to Redeem</label>
+                                                   <Input
+                                                       size="lg"
+                                                       type="number"
+                                                       label="Minimum Points"
+                                                       name="minimumpointstoredeem"
+                                                       value={loyaltyPlanData.minimumpointstoredeem}
+                                                       onChange={handleChange}
+                                                   />
+                                               </div>
                             </div>
                         </div>
 
@@ -431,7 +470,7 @@ export default function UpdateLoyalty() {
                             color="black"
                             fullWidth
                         >
-                            Add Plan
+                            UPDATE PLAN
                         </Button>
                     </div>
                 </form>

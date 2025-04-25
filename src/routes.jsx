@@ -21,7 +21,10 @@ import { LuPackagePlus } from "react-icons/lu";
 import Loyalty from "./pages/dashboard/Loyalty";
 import Brands from "./pages/dashboard/Brands";
 import { TbBrandDatabricks } from "react-icons/tb";
-
+import { BsFillPersonCheckFill } from "react-icons/bs";
+import { GrMoney } from "react-icons/gr";
+import Travelagents from "./pages/dashboard/Travelagents";
+import TravelAgentTransection from "./pages/dashboard/TravelAgentTransection";
 
 const icon = {
   className: "w-5 h-5 text-inherit",
@@ -108,6 +111,25 @@ export const routes = [
         name: "Manage Loyalty",
         path: "/loyalty",
         element: <Loyalty/>,
+      },
+
+    ]
+  },
+  {
+    title: "Manage Agent",
+    layout:'dashboard',
+    pages:[
+      {
+        icon:<BsFillPersonCheckFill style={{fontSize:'20px'}} />,
+        name: "Manage Travel Agent",
+        path: "/travel-agents",
+        element: <Travelagents/>,
+      },
+      {
+        icon: <GrMoney style={{fontSize:'20px'}} />,
+        name: "Manage Transection",
+        path: "/transection",
+        element: <TravelAgentTransection/>,
       },
 
     ]

@@ -1,4 +1,4 @@
-import React, { useContext, useState } from "react";
+import React, { useContext, useState, url } from "react";
 import {
     Card,
     Input,
@@ -12,13 +12,13 @@ import { useNavigate } from "react-router-dom";
 import { StoreContext } from "@/context/context";
 
 export function AddCity({ }) {
-    const {tostMsg, SetTostMsg } = useContext(StoreContext)
+    const {tostMsg, SetTostMsg, url, agentid } = useContext(StoreContext)
     const brand = {
-        _id: "673ef93329933f9da9d46d2a",
+        _id: "67657595591b7c8a9580623b",
     };
 
     const [cityData, setCityData] = useState({
-        agentid: brand._id,
+        agentid: agentid,
         name: "",
         cityimage: null,
         alt: "",
@@ -61,7 +61,7 @@ export function AddCity({ }) {
 
         try {
             const response = await axios.post(
-                "http://localhost:4000/api/admin/addcity",
+                `${url}/api/admin/addcity`,
                 formData,
                 { headers: { "Content-Type": "multipart/form-data" } }
             );
@@ -117,6 +117,16 @@ export function AddCity({ }) {
                                 required
                             />
                            </div>
+
+                           <div>
+                          <label className="block text-gray-700 font-medium mb-2">Description</label>
+                            <Textarea
+                                label="Description"
+                                name="description"
+                                value={cityData.description}
+                                onChange={handleChange}
+                            />
+                          </div>
                             <div className="space-y-2">
                                 <Typography variant="small" className="font-medium">
                                     City Image
@@ -147,15 +157,7 @@ export function AddCity({ }) {
                                 required
                             />
                            
-                          <div>
-                          <label className="block text-gray-700 font-medium mb-2">Description</label>
-                            <Textarea
-                                label="Description"
-                                name="description"
-                                value={cityData.description}
-                                onChange={handleChange}
-                            />
-                          </div>
+                         
                         </div>
 
                         {/* Arabic Fields */}

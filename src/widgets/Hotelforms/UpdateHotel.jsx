@@ -22,11 +22,11 @@ import LocationPicker from "../location/LocationPicker";
 
 
 export function UpdateHotel() {
-    const { url, agentid, cities, SetTostMsg, EditHotel } = useContext(StoreContext)
+    const {loading, url, agentid, cities, SetTostMsg, EditHotel, fetchCities } = useContext(StoreContext)
     const [id, setId] = useState()
     console.log(EditHotel)
     const brand = {
-        agentid: "673ef93329933f9da9d46d2a"
+        agentid: "67657595591b7c8a9580623b"
     }
 
     
@@ -57,11 +57,14 @@ export function UpdateHotel() {
         },
     ]);
     const [location, setLocation] = useState({
-        latitude: 33.6844,
-        longitude: 73.0479, // Default location: Islamabad
+        latitude: "",
+        longitude: "", // Default location: Islamabad
     });
     const [formData, setFormData] = useState({
-        agentid: brand.agentid,
+        agentid: agentid,
+        bookingengineid:"",
+        comment:'',
+        arabiccomment:"",
         city: "",
         name: "",
         arabicname: "",
@@ -78,7 +81,7 @@ export function UpdateHotel() {
         arabicdescription: "",
         facilities:  [{ facility: "", arabicfacility: "", facilityimage: "", alt: "", caption: "" }],
         gallery: gallery,
-        policies: policies,
+        policies: [],
         facilityheading: "",
         arabicfacilityheading: "",
         facilitydescription: "",
@@ -89,74 +92,119 @@ export function UpdateHotel() {
         metainfo: "",
     });
 
-    useEffect(()=>{
-      if (EditHotel) {
-        console.log(EditHotel)
-        setId(EditHotel._id)
-        setFormData({
-            agentid: EditHotel[0].agentid || "673ef93329933f9da9d46d2a",
-            city: EditHotel[0].city || "",
-            name: EditHotel[0].name?.split(" | ")[0] || "",
-            arabicname: EditHotel[0].name?.split(" | ")[1] || "",
-            starrating: EditHotel[0].starrating || "",
-            address: EditHotel[0].address?.split(" | ")[0] || "",
-            arabicaddress: EditHotel[0].address?.split(" | ")[1] || "",
-            nearby: EditHotel[0].nearby?.split(" | ")[0] || "",
-            arabicnearby: EditHotel[0].nearby?.split(" | ")[1] || "",
-            minrate: EditHotel[0].minrate || "",
-            ratingguest: EditHotel[0].ratingguest || "",
-            description: EditHotel[0].description?.split(" | ")[0] || "",
-            arabicdescription: EditHotel[0].description?.split(" | ")[1] || "",
-            facilities: EditHotel[0].facilities?.map((facility) => ({
-                facility: facility.facility || "",
-                arabicfacility: facility.arabicfacility || "",
-                facilityimage: facility.facilityimage,
-                alt: facility.alt || "",
-                caption: facility.caption || "",
-            })),
+    useEffect(() => {
+        if (EditHotel) {
+            fetchCities()
+            console.log(EditHotel);
+            const deepCopyEditHotel = JSON.parse(JSON.stringify(EditHotel));
+            // Merge the new state with the previous state
+            setFormData((prevFormData) => ({
+                ...prevFormData, // Preserve previous fields
+                agentid: deepCopyEditHotel[0].agentid || agentid,
+                city: deepCopyEditHotel[0].city._id || "",
+                name: deepCopyEditHotel[0].name?.split(" | ")[0] || "",
+                arabicname: deepCopyEditHotel[0].name?.split(" | ")[1] || "",
+                bookingengineid: deepCopyEditHotel[0].bookingengineid || "",
+                starrating: deepCopyEditHotel[0].starrating || "",
+                address: deepCopyEditHotel[0].address?.split(" | ")[0] || "",
+                arabicaddress: deepCopyEditHotel[0].address?.split(" | ")[1] || "",
+                arabiccomment: deepCopyEditHotel[0].comment?.split(" | ")[1] || "",
+                comment: deepCopyEditHotel[0].comment?.split(" | ")[0] || "",
+                nearby: deepCopyEditHotel[0].nearby?.split(" | ")[0] || "",
+                arabicnearby: deepCopyEditHotel[0].nearby?.split(" | ")[1] || "",
+                minrate: deepCopyEditHotel[0].minrate || "",
+                ratingguest: deepCopyEditHotel[0].ratingguest || "",
+                description: deepCopyEditHotel[0].description?.split(" | ")[0] || "",
+                arabicdescription: deepCopyEditHotel[0].description?.split(" | ")[1] || "",
+                policies: deepCopyEditHotel[0].policies?.map((policy) => ({
+                    policyheading: policy.policyheading?.split(" | ")[0] || "",
+                    arabicpoliylabel: policy.policyheading?.split(" | ")[1] || "",
+                    policydescription: policy.policydescription?.split(" | ")[0] || "",
+                    arabicpolicydescription: policy.policydescription?.split(" | ")[1] || "",
+                })),
+                facilities:deepCopyEditHotel[0].facilities.map((facility) => ({
+                    facility: facility.facility, // Extract English text
+                    arabicfacility: facility.facility?.split(" | ")[1] || "", // Extract Arabic text
+                    facilityimage: facility.facilityimage || "", // Facility image
+                    alt: facility.alt || "", // Alt text
+                    caption: facility.caption || "", // Caption
+                })),
+
+                facilityheading: deepCopyEditHotel[0].facilityheading?.split(" | ")[0] || "",
+                arabicfacilityheading: deepCopyEditHotel[0].facilityheading?.split(" | ")[1] || "",
+                facilitydescription: deepCopyEditHotel[0].facilitydescription?.split(" | ")[0] || "",
+                arabicfacilitydescription: deepCopyEditHotel[0].facilitydescription?.split(" | ")[1] || "",
+                location: {
+                    latitude: deepCopyEditHotel[0].location?.latitude || 33.6844, // Default to Islamabad if missing
+                    longitude: deepCopyEditHotel[0].location?.longitude || 73.0479,
+                },
+                addedoreditedby: deepCopyEditHotel[0].addedoreditedby || "673ef93329933f9da9d46d2a",
+                featured: deepCopyEditHotel[0].featured || false,
+                metaheading: deepCopyEditHotel[0].metaheading || "",
+                metainfo: deepCopyEditHotel[0].metainfo || "",
+            }));
+    
+            // setPolicies(
+            //     deepCopyEditHotel[0].policies.map((policy) => ({
+            //         policyheading: policy.policyheading.split(" | ")[0] || "",
+            //         arabicpoliylabel: policy.policyheading.split(" | ")[1] || "",
+            //         policydescription: policy.policydescription.split(" | ")[0] || "",
+            //         arabicpolicydescription: policy.policydescription.split(" | ")[1] || "",
+            //     }))
+            // );
+
+
+            setGallery(
+                deepCopyEditHotel[0].gallery.map((gallery)=>({
+                    galleryimage:gallery.galleryimage,
+                    alt: gallery.alt,
+                }))
+            )
+            setLocation(
+               
+                    {
+                    latitude: deepCopyEditHotel[0].location?.latitude || 33.6844, // Default to Islamabad if missing
+                    longitude: deepCopyEditHotel[0].location?.longitude || 73.0479,
+                    }
+                
+            )
+
            
-            policies: EditHotel[0].policies?.map((policy) => ({
-                policyheading: policy.policyheading?.split(" | ")[0] || "",
-                arabicpoliylabel: policy.policyheading?.split(" | ")[1] || "",
-                policydescription: policy.policydescription?.split(" | ")[0] || "",
-                arabicpolicydescription: policy.policydescription?.split(" | ")[1] || "",
-            })),
-            facilityheading: EditHotel[0].facilityheading?.split(" | ")[0] || "",
-            arabicfacilityheading: EditHotel[0].facilityheading?.split(" | ")[1] || "",
-            facilitydescription: EditHotel[0].facilityheading?.split(" | ")[0] || "",
-            arabicfacilitydescription: EditHotel[0].facilityheading?.split(" | ")[1] || "",
-            location: {
-                latitude: EditHotel[0].location?.latitude || 33.6844, // Default to Islamabad if missing
-                longitude: EditHotel[0].location?.longitude || 73.0479,
-            },
-            addedoreditedby: EditHotel[0].addedoreditedby || "673ef93329933f9da9d46d2a",
-            featured: EditHotel[0].featured || false,
-            metaheading: EditHotel[0].metaheading || "",
-            metainfo: EditHotel[0].metainfo || "",
-        });
-
+              
+                   
+        
+            
+        }
       
-
-        setPolicies(
-          EditHotel[0].policies.map((policy) => ({
-              policyheading: policy.policyheading.split(" | ")[0] || "",
-              arabicpoliylabel: policy.policyheading.split(" | ")[1] || "",
-              policydescription: policy.policydescription.split(" | ")[0] || "",
-              arabicpolicydescription: policy.policydescription.split(" | ")[1] || "",
-          }))
-      );
-      }
-
-
-
-      console.log(formData)
-    },[])
+    
+        console.log(formData);
+    }, []);
+    
     const [selectedIndices, setSelectedIndices] = useState([]);
 
+    useEffect(() => {
+        if (EditHotel && Array.isArray(EditHotel[0]?.facilities) && Facilities) {
+            // Find indices of Facilities that match EditHotel[0].facilities
+            const indices = Facilities.map((staticFacility, index) => {
+                const isMatched = EditHotel[0].facilities.some(
+                    (storedFacility) =>
+                        storedFacility.facility?.split(" | ")[0] === staticFacility.name
+                );
+                return isMatched ? index : null; // Return index if matched, otherwise null
+            }).filter((index) => index !== null); // Remove null values
+    
+            setSelectedIndices(indices); // Store matched indices
+        }
+    }, [EditHotel, Facilities]);
+    
+    
+    useEffect(() => {
+        console.log("Matched Facility Indices:", selectedIndices);
+    }, [selectedIndices]);
 
     const navigate = useNavigate()
 
-    console.log(Facilities)
+    // console.log(Facilities)
 
     const handleLocationChange = (e) => {
         const { name, value } = e.target;
@@ -191,6 +239,19 @@ export function UpdateHotel() {
         setter(updated);
     };
 
+
+    const handlePolicyChange = (index, field, value, setFormData, formData) => {
+        const updatedPolicies = [...formData.policies];
+        updatedPolicies[index] = {
+            ...updatedPolicies[index],
+            [field]: value,
+        };
+        setFormData({
+            ...formData,
+            policies: updatedPolicies,
+        });
+    };
+
     const addField = (setter, defaultValue) => {
         setter((prev) => [...prev, defaultValue]);
     };
@@ -210,15 +271,18 @@ export function UpdateHotel() {
         const formdata = new FormData();
         console.log(formData.agentid)
         formdata.append("agentid", formData.agentid);
+        formdata.append("bookingengineid", formData.bookingengineid);
         formdata.append("city", formData.city);
         formdata.append("name", `${formData.name} | ${formData.arabicname}`);
+        formdata.append("description", `${formData.description} | ${formData.arabicdescription}`);
+        formdata.append("comment", `${formData.comment} | ${formData.arabiccomment}`);
         formdata.append("starrating", formData.starrating)
         formdata.append("address", `${formData.address} | ${formData.arabicaddress}`);
         formdata.append("nearby", `${formData.nearby} | ${formData.arabicnearby}`);
         formdata.append("minrate", formData.minrate);
         formdata.append('ratingguest', formData.ratingguest);
         formdata.append("facilityheading", `${formData.facilityheading} | ${formData.arabicfacilityheading}`);
-        formdata.append("description", `${formData.description} | ${formData.arabicdescription}`);
+        formdata.append("facilitydescription", `${formData.facilitydescription} | ${formData.arabicfacilitydescription}`);
         formdata.append("addedoreditedby", formData.addedoreditedby);
         formdata.append("featured", formData.featured);
         formdata.append("metaheading", formData.metaheading);
@@ -238,10 +302,18 @@ export function UpdateHotel() {
                 formdata.append('galleryimage', item.galleryimage);
             }
         });
+        // Convert gallery to JSON.stringify
+// const galleryData = gallery.map((item) => ({
+//     galleryimage: item.galleryimage,
+//     alt: item.alt,
+//     caption: item.caption
+// }));
+// formdata.append("gallery", JSON.stringify(galleryData));
 
         // Append facilities
+        // Append facilities
         formData.facilities.forEach((item, index) => {
-            formdata.append(`facility_${index}`, `${item.facility} | ${item.arabicfacility}`);
+            formdata.append(`facility_${index}`, item.facility);
             formdata.append(`facilityalt_${index}`, item.alt);
             formdata.append(`facilitycaption_${index}`, item.caption);
 
@@ -271,9 +343,11 @@ export function UpdateHotel() {
                 formdata,
                 { headers: { "Content-Type": "multipart/form-data" } }
             );
+           console.log(response)
             if (response.data.success) {
                 SetTostMsg(response.data.message);
                 navigate('/dashboard/hotels')
+              
             } else {
                 alert(response.data.message);
             }
@@ -285,48 +359,60 @@ export function UpdateHotel() {
 
     const handleImageClick = async (imageUrl, imageName, arabicName, index) => {
         try {
-            // Update selected indices
-        setSelectedIndices((prevIndices) => {
-            if (prevIndices.includes(index)) {
-                // Remove index if already selected
-                return prevIndices.filter((i) => i !== index);
-            } else {
-                // Add index if not selected
-                return [...prevIndices, index];
-            }
-        });
+            // Toggle selected indices
+            setSelectedIndices((prevIndices) => {
+                if (prevIndices.includes(index)) {
+                    return prevIndices.filter((i) => i !== index); // Deselect index
+                } else {
+                    return [...prevIndices, index]; // Select index
+                }
+            });
+    
             // Fetch the image and create a File object
             const response = await fetch(imageUrl);
             const blob = await response.blob();
-            const extension = blob.type.split("/")[1]; // Get file extension
-            const file = new File([blob], `${imageName}.${extension}`, { type: blob.type });
     
+            let extension = blob.type.split("/")[1];
+            if (extension.includes("+")) {
+                extension = extension.split("+")[0];
+            }
+            const sanitizedType = blob.type.split("+")[0];
+            const file = new File([blob], `${imageName}.${extension}`, { type: sanitizedType });
+    
+            // Add or remove the facility from the formData state
             setFormData((prevFormData) => {
+                // Check if the facility already exists
+                const facilityIdentifier = `${imageName} | ${arabicName}`;
                 const facilityExists = prevFormData.facilities.some(
-                    (facility) => facility.facility === `${imageName} | ${arabicName}`
+                    (facility) => facility.facility === facilityIdentifier
                 );
-            
-                const newFacilities = facilityExists
+    
+                const updatedFacilities = facilityExists
                     ? prevFormData.facilities.filter(
-                          (facility) => facility.facility !== `${imageName} | ${arabicName}`
-                      )
+                        (facility) => facility.facility !== facilityIdentifier
+                    )
                     : [
-                          ...prevFormData.facilities,
-                          {
-                              facility: `${imageName} | ${arabicName}`,
-                              arabicfacility: arabicName,
-                              facilityimage: file,
-                              alt: `${imageName} | ${arabicName}`,
-                              caption: "",
-                          },
-                      ];
-            
-                return { ...prevFormData, facilities: newFacilities };
+                        ...prevFormData.facilities,
+                        {
+                            facility: `${imageName} | ${arabicName}` ,
+                            arabicfacility: arabicName,
+                            facilityimage: file,
+                            alt: facilityIdentifier,
+                            caption: "",
+                        },
+                    ];
+    
+                return {
+                    ...prevFormData,
+                    facilities: updatedFacilities,
+                };
             });
         } catch (error) {
             console.error("Error handling image click:", error);
         }
-    }
+    };
+    
+
     
     
     
@@ -336,10 +422,21 @@ export function UpdateHotel() {
         console.log(formData)
         console.log(gallery)
         console.log(facilities)
+        console.log(formData.facilities)
         console.log(policies)
        
-    }, [formData, gallery, facilities, policies, agentid, location])
+       
+    }, [formData, gallery, facilities, policies, agentid, location, loading])
+    if (loading) {
+        navigate("/dashboard/hotels");
+        return (
+          <div className="flex items-center justify-center h-screen">
+            <div className="animate-spin rounded-full h-12 w-12 border-t-4 border-blue-500 border-solid"></div>
+          </div>
+        );
 
+        
+      }
     return (
         <>
             {/* Trigger Button */}
@@ -424,7 +521,7 @@ export function UpdateHotel() {
                                         Policies
                                     </Typography>
 
-                                    {policies.map((policy, index) => (
+                                    {formData.policies.map((policy, index) => (
                                         <div key={index} className="grid grid-cols-1 gap-4">
                                             <Input
                                                 size="sm"
@@ -437,12 +534,12 @@ export function UpdateHotel() {
                                                 label="Policy Description"
                                                 value={policy.policydescription}
                                                 onChange={(e) =>
-                                                    handleDynamicChange(
+                                                    handlePolicyChange(
                                                         index,
                                                         "policydescription",
                                                         e.target.value,
-                                                        setPolicies,
-                                                        policies
+                                                        setFormData,
+                                                        formData
                                                     )
                                                 }
                                             />
@@ -480,182 +577,167 @@ export function UpdateHotel() {
                                     </div>
                                 </div>
                                 <hr className="border-b-2 border-gray-700" />
-
+                                <div>
+                                <label className="block text-gray-700 font-medium mb-2">Comment:</label>
+                                <textarea
+                                    name="comment"
+                                    value={formData.comment}
+                                    onChange={handleInputChange}
+                                    rows="4"
+                                    className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring focus:ring-gray-300"
+                                ></textarea>
+                            </div>
 
 
                             </div>
 
                             {/* Arabic form inputs */}
                             <div className="">
-                                {/* Basic Fields */}
-                                <Typography variant="h4" className="font-bold  mb-6">
-                                    Arabic details
-                                </Typography>
-                                <div className="mt-11 flex flex-col gap-5">
-                                    <div >
-                                        <label className="block text-gray-700 font-medium mb-2">Hotel Name:</label>
-                                        <Input
-                                            label="Name"
-                                            name="arabicname"
-                                            value={formData.arabicname}
-                                            size='lg'
-                                            onChange={handleInputChange} required />
-                                    </div>
+    {/* Basic Fields */}
+    <Typography variant="h4" className="font-bold mb-6">
+        التفاصيل العربية
+    </Typography>
+    <div className="mt-11 flex flex-col gap-5">
+        <div>
+            <label className="block text-gray-700 font-medium mb-2">اسم الفندق:</label>
+            <Input
+                label="الاسم"
+                name="arabicname"
+                value={formData.arabicname}
+                size="lg"
+                onChange={handleInputChange}
+                required
+            />
+        </div>
 
-                                    <div>
-                                        <label className="block text-gray-700 font-medium mb-2">Description:</label>
-                                        <textarea
-                                            name="arabicdescription"
-                                            value={formData.arabicdescription}
-                                            onChange={handleInputChange}
-                                            rows="4"
-                                            className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring focus:ring-gray-300"
-                                        ></textarea>
-                                    </div>
-                                    {/* Address Input */}
-                                    <div className="">
-                                        <label className="block text-gray-700 font-medium mb-2">Address:</label>
-                                        <Input
-                                            label="Address"
-                                            name="arabicaddress"
-                                            value={formData.arabicaddress}
-                                            size="lg"
-                                            onChange={handleInputChange}
-                                            required
-                                            className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring focus:ring-gray-300"
-                                        />
-                                    </div>
+        <div>
+            <label className="block text-gray-700 font-medium mb-2">الوصف:</label>
+            <textarea
+                name="arabicdescription"
+                value={formData.arabicdescription}
+                onChange={handleInputChange}
+                rows="4"
+                className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring focus:ring-gray-300"
+            ></textarea>
+        </div>
+        
+        {/* Address Input */}
+        <div>
+            <label className="block text-gray-700 font-medium mb-2">العنوان:</label>
+            <Input
+                label="العنوان"
+                name="arabicaddress"
+                value={formData.arabicaddress}
+                size="lg"
+                onChange={handleInputChange}
+                required
+                className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring focus:ring-gray-300"
+            />
+        </div>
 
-                                    {/* Nearby Input */}
-                                    <div className="">
-                                        <label className="block text-gray-700 font-medium mb-2">Nearby:</label>
-                                        <Input
-                                            label="Nearby"
-                                            name="arabicnearby"
-                                            value={formData.arabicnearby}
-                                            size="lg"
-                                            onChange={handleInputChange}
-                                            required
-                                            className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring focus:ring-gray-300"
-                                        />
-                                    </div>
+        {/* Nearby Input */}
+        <div>
+            <label className="block text-gray-700 font-medium mb-2">الأماكن القريبة:</label>
+            <Input
+                label="الأماكن القريبة"
+                name="arabicnearby"
+                value={formData.arabicnearby}
+                size="lg"
+                onChange={handleInputChange}
+                required
+                className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring focus:ring-gray-300"
+            />
+        </div>
 
+        {/* Policies */}
+        <div className="flex flex-col gap-3">
+            <Typography variant="h6" className="font-medium">
+                السياسات
+            </Typography>
 
+            {formData.policies.map((policy, index) => (
+                <div key={index} className="grid grid-cols-1 gap-4">
+                    <Input
+                        size="sm"
+                        // label={policy.arabicpoliylabel} // Predefined Arabic label
+                        value={ policy.arabicpoliylabel}
+                        disabled
+                        // onChange={(e) =>
+                        //     handlePolicyChange(
+                        //         index,
+                        //         "arabicpoliylabel",
+                        //         e.target.value,
+                        //         setFormData,
+                        //         formData
+                        //     )
+                        // }
+                    />
+                    <Textarea
+                        size="sm"
+                        label="وصف السياسة"
+                        value={policy.arabicpolicydescription}
+                        onChange={(e) =>
+                            handlePolicyChange(
+                                index,
+                                "arabicpolicydescription",
+                                e.target.value,
+                                setFormData,
+                                formData
+                            )
+                        }
+                    />
+                </div>
+            ))}
+        </div>
+        <hr className="border-b-2 border-gray-700" />
 
+        {/* Facilities */}
+        <div className="flex flex-col gap-4">
+            <div>
+                <label className="block text-gray-700 font-medium mb-2">عنوان المرافق:</label>
+                <input
+                    type="text"
+                    name="arabicfacilityheading"
+                    value={formData.arabicfacilityheading}
+                    onChange={handleInputChange}
+                    className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring focus:ring-gray-300"
+                />
+            </div>
+            <div>
+                <label className="block text-gray-700 font-medium mb-2">وصف المرافق:</label>
+                <textarea
+                    name="arabicfacilitydescription"
+                    value={formData.arabicfacilitydescription}
+                    onChange={handleInputChange}
+                    rows="3"
+                    className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring focus:ring-gray-300"
+                ></textarea>
+            </div>
+        </div>
+        <hr className="border-b-2 border-gray-700" />
+        <div>
+            <label className="block text-gray-700 font-medium mb-2">التعليق:</label>
+            <textarea
+                name="arabiccomment"
+                value={formData.arabiccomment}
+                onChange={handleInputChange}
+                rows="4"
+                className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring focus:ring-gray-300"
+            ></textarea>
+        </div>
+    </div>
+</div>
 
-
-                                    {/* Dynamic Arrays */}
-
-
-
-                                    {/* Policies */}
-                                    {/* Policies Section */}
-                                    <div className="flex flex-col gap-3">
-                                        <Typography variant="h6" className="font-medium">
-                                            Policies
-                                        </Typography>
-
-                                        {policies.map((policy, index) => (
-                                            <div key={index} className="grid grid-cols-1 gap-4">
-                                                <Input
-                                                    size="sm"
-                                                    label={policy.arabicpoliylabel} // Predefined label
-                                                    value={policy.arabicpoliylabel}
-                                                    disabled // Prevent user from changing the policy heading
-                                                />
-                                                <Textarea
-                                                    size="sm"
-                                                    label="Policy Description"
-                                                    value={policy.arabicpolicydescription}
-                                                    onChange={(e) =>
-                                                        handleDynamicChange(
-                                                            index,
-                                                            "arabicpolicydescription",
-                                                            e.target.value,
-                                                            setPolicies,
-                                                            policies
-                                                        )
-                                                    }
-                                                />
-                                            </div>
-                                        ))}
-                                    </div>
-                                    <hr className="border-b-2 border-gray-700" />
-
-
-                                    {/* Facilities */}
-
-                                    <div className="flex flex-col gap-4 ">
-
-                                       
-
-                                        <div className="">
-                                            <label className="block  text-gray-700 font-medium mb-2">Facility Heading:</label>
-                                            <input
-                                                type="text"
-                                                name="arabicfacilityheading"
-                                                value={formData.arabicfacilityheading}
-                                                onChange={handleInputChange}
-                                                className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring focus:ring-gray-300"
-                                            />
-                                        </div>
-                                        <div>
-                                            <label className="block text-gray-700 font-medium mb-2">Facility Description:</label>
-                                            <textarea
-                                                name="arabicfacilitydescription"
-                                                value={formData.arabicfacilitydescription}
-                                                onChange={handleInputChange}
-                                                rows="3"
-                                                className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring focus:ring-gray-300"
-                                            ></textarea>
-                                        </div>
-                                    </div>
-                                    <hr className="border-b-2 border-gray-700" />
-
-                                    {/* map location */}
-
-
-                                    {/* Other Fields */}
-                                    {/* <div>
-                                        <label>Meta heading:</label>
-                                        <Input
-                                            label="Meta heading"
-                                            name="metaheading"
-                                            size='lg'
-                                            onChange={handleInputChange} required />
-                                    </div>
-                                    <div>
-                                        <label className="block text-gray-700 font-medium mb-2">Meta Info:</label>
-                                        <textarea
-                                            name="metainfo"
-                                            onChange={handleInputChange}
-                                            rows="3"
-                                            className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring focus:ring-gray-300"
-                                        ></textarea>
-                                    </div> */}
-
-
-
-
-
-                                </div>
-                            </div>
 
                         </div>
-
-                        {/* map with full width */}
-                        <div>
-                            <LocationPicker setFormData={setFormData} location={location} setLocation={setLocation} />
-                        </div>
-                        {/* map with full width */}
 
                          {/* Default facilities  */}
-                               <div className="flex gap-3 text-center">
+                         <div className="flex flex-wrap gap-3 justify-center">
                                {Facilities.map((item, index) => (
     <div
     key={index}
     onClick={() => handleImageClick(item.img, item.name, item.arabicname ,index)} // Pass image URL and name
-    className={`flex flex-col w-40 items-center gap-2 border-2 p-2 rounded-md ${
+    className={`flex flex-col w-28 items-center gap-2 border-2 p-2 rounded-md ${
         selectedIndices.includes(index) ? "bg-gray-500" : "" // Apply gray bg for selected items
     } hover:bg-blue-50 cursor-pointer`}
 >
@@ -673,6 +755,13 @@ export function UpdateHotel() {
 ))}
 
                                </div>
+                        {/* map with full width */}
+                        <div>
+                            <LocationPicker setFormData={setFormData} location={location} setLocation={setLocation} />
+                        </div>
+                        {/* map with full width */}
+
+                        
 
                         {/* form footer */}
                         <div className="grid grid-cols-2 gap-5">
@@ -694,7 +783,7 @@ export function UpdateHotel() {
                                             value={location.latitude}
                                             onChange={handleLocationChange}
                                             required
-                                            readOnly
+                                           
                                         />
                                         <Input
                                             size="lg"
@@ -704,7 +793,7 @@ export function UpdateHotel() {
                                             value={location.longitude}
                                             onChange={handleLocationChange}
                                             required
-                                            readOnly
+                                            
                                         />
                                     </div>
                                 </div>
@@ -713,14 +802,15 @@ export function UpdateHotel() {
                                 <div className="form-group">
                                     <label className="block text-gray-700 font-medium mb-2">Select City</label>
                                     <select
-                                        name="city"
-                                        onChange={handleInputChange}
-                                        className="w-full border border-gray-300 rounded-lg px-4 py-2 bg-white focus:ring focus:ring-gray-300"
-                                        required
+                                       name="city"
+                                       value={formData.city || ""} // Controlled value
+                                       onChange={handleInputChange}
+                                       className="w-full text-gray-700 border border-gray-300 rounded-lg px-4 py-2 bg-white focus:ring focus:ring-gray-300"
+                                       required
                                     >
-                                        <option value="" disabled>
-                                            Select a City
-                                        </option>
+                                        <option className="text-gray-700" value="" disabled>
+                                        Select a City
+                                    </option>
                                         {cities.map((city, index) => (
                                             <option key={index} value={city._id}>
                                                 {city.name}
@@ -772,13 +862,13 @@ export function UpdateHotel() {
                 className="w-full h-32 object-cover rounded-lg"
             />
         ) : (
-            <div></div>
+            // <div></div>
             // Show image preview from URL
-            // <img
-            //     src={`${url}/Images/${item.galleryimage}`}
-            //     alt={item.galleryimage || `Gallery image ${index + 1}`}
-            //     className="w-full h-32 object-cover rounded-lg"
-            // />
+            <img
+                src={`${url}/Images/${item.galleryimage}`}
+                alt={item.galleryimage || `Gallery image ${index + 1}`}
+                className="w-full h-32 object-cover rounded-lg"
+            />
         ))}
 </div>
 
@@ -876,6 +966,23 @@ export function UpdateHotel() {
                                         className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring focus:ring-gray-300"
                                     />
                                 </div>
+
+                                
+                                                             {/* Minum rate */}
+                                                             <div className="">
+                                                                <label className="block text-gray-700 font-medium mb-2">Booking Engine Id:</label>
+                                                                <Input
+                                                                    label="bookingengineid"
+                                                                    name="bookingengineid"
+                                                                    value={formData.bookingengineid}
+                                                                    size="lg"
+                                                                    onChange={handleInputChange}
+                                                                    // required
+                                                                    className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring focus:ring-gray-300"
+                                                                />
+                                                            </div>
+                                
+                                                        
 
                                 {/* Other Fields */}
                                 {/* <div>
@@ -975,7 +1082,7 @@ export function UpdateHotel() {
 
                                 <div className="grid grid-cols-1">
                                     <Button type="submit" className="bg-gray-900 w-full mt-5">
-                                        Add Hotel
+                                       UPDATE HOTEL
                                     </Button>
                                 </div>
                             </div>

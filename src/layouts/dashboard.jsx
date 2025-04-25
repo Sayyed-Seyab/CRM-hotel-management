@@ -23,12 +23,39 @@ import CusisineTab from "@/widgets/ResturanTabs/CuisineTab";
 import UpdateRestaurant from "@/widgets/ResturentFroms/UpdateRestaurant";
 import AddLoyalty from "@/widgets/Loyaltyform/AddLoyalty";
 import UpdateLoyalty from "@/widgets/Loyaltyform/UpdateLoyalty";
+import AddTravelAgent from "@/travelagent/AddTravelAgent";
+import UpdateTravelAgent from "@/travelagent/UpdateTravelAgent";
+import AddTransaction from "@/widgets/Transections/AddTransection";
+import { useContext, useEffect } from "react";
+import { StoreContext } from "@/context/context";
+import { toast } from "react-toastify";
 
 
 export function Dashboard() {
   const [controller, dispatch] = useMaterialTailwindController();
   const { sidenavType } = controller;
+  const {tostMsg, SetTostMsg} = useContext(StoreContext)
   console.log(routes)
+  
+
+  useEffect(()=>{
+    if (tostMsg !== null) {
+      // Show toast and reset state after a delay
+      const toastTimeout = setTimeout(() => {
+          toast.success(tostMsg);
+      }, 1000);
+
+      const resetTimeout = setTimeout(() => {
+          SetTostMsg(null); // Reset state after 5 seconds
+      }, 5000);
+
+      // Cleanup timeouts on component unmount
+      return () => {
+          clearTimeout(toastTimeout);
+          clearTimeout(resetTimeout);
+      };
+  }
+  },[])
 
   return (
     <div className="min-h-screen bg-blue-gray-50/50">
@@ -65,6 +92,9 @@ export function Dashboard() {
         <Route path="/update-restaurant"  element={<UpdateRestaurant/>}  />
         <Route path="/add-loyalty"  element={<AddLoyalty/>}  />
         <Route path="/update-loyalty"  element={<UpdateLoyalty/>}  />
+        <Route path="/add-travel-agent"  element={<AddTravelAgent/>}  />
+        <Route path="/update-travel-agent"  element={<UpdateTravelAgent/>}  />
+        <Route path="/add-transection"  element={<AddTransaction/>}  />
 
           {routes.map(
             ({ layout, pages }) =>

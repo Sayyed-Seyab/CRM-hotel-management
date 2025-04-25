@@ -79,9 +79,10 @@ export default function AddLoyalty() {
         formdata.append('minimumpointstoredeem', loyaltyPlanData.minimumpointstoredeem);
 
          // Join English and Arabic points for each facility
-    const formattedFacilities = loyaltyPlanData.otherfacilities.map((facility) => ({
+    const formattedFacilities = otherFacilities.map((facility) => ({
         point: `${facility.point} | ${facility.arabicpoints}`, // Combine English and Arabic
     }));
+    console.log(formattedFacilities)
 
     // Add otherFacilities as JSON string
     formdata.append('otherfacilities', JSON.stringify(formattedFacilities));
@@ -91,8 +92,7 @@ export default function AddLoyalty() {
             });
 
             if (response.data.success) {
-              
-                SetTostMsg(response.data.message);
+                SetTostMsg(response.data.Message);
                 navigate('/dashboard/loyalty');
             } else {
                  toast.error(response.data.Message);
@@ -286,9 +286,9 @@ export default function AddLoyalty() {
                 )}
               
               {/* signup discount */}
-              {loyaltyPlanData.plantype !== 'Silver'?  '' :(
+             
                   <div>
-                  <label className="block text-gray-700 font-medium mb-2">Signup Discount (%)</label>
+                  <label className="block text-gray-700 font-medium mb-2">{loyaltyPlanData.plantype} Discount (%)</label>
                   <Input
                       size="lg"
                       type="number"
@@ -298,7 +298,7 @@ export default function AddLoyalty() {
                       onChange={handleChange}
                   />
               </div>
-              )}
+            
               
 
                  {/* Points and Other Details */}
@@ -338,7 +338,7 @@ export default function AddLoyalty() {
 
                 {/* Value Redeemed per SAR */}
                 <div>
-                    <label className="block text-gray-700 font-medium mb-2">Points Redeemed per SAR</label>
+                    <label className="block text-gray-700 font-medium mb-2"> Per SAR points redeemed</label>
                     <Input
                         size="lg"
                         type="number"

@@ -7,7 +7,7 @@ import { StoreContext } from '@/context/context';
 import { useNavigate } from 'react-router-dom';
 
 export default function UpdateRestaurant() {
-    const { url, agentid, SetTostMsg, hotels, Editrestaurant, cities } = useContext(StoreContext);
+    const {loading, url, agentid, SetTostMsg, hotels, Editrestaurant, cities } = useContext(StoreContext);
     const navigate = useNavigate();
     const [gallery, setgallery] = useState([{ resturantimage: "", alt: "", caption: "" }])
     const [diningdata, setdiningdata] = useState([{
@@ -74,40 +74,42 @@ export default function UpdateRestaurant() {
             });
     
             // Update gallery with formatted multilingual fields
-            // setgallery(
-            //     Editrestaurant[0].image?.map((item) => ({
-            //         resturantimage: item.resturantimage.url || "",
-            //         alt: item.resturantimage.alt|| "",
-            //         caption: item.resturantimage.caption|| "",
-            //     })) || gallery
-            // );
-    
-            // Update dining data
-            setdiningdata(
-                Editrestaurant[0].dining?.map((item) => ({
-                    heading: item.heading?.split(" | ")[0] || "",
-                    arabicheading: item.heading?.split(" | ")[1] || "",
-                    arabicdesc: item.desc?.split(" | ")[1] || "",
-                    desc: item.desc?.split(" | ")[0] || "",
-                    diningimageurl: item.diningimage.url || "",
-                    diningalt: item.diningimage.alt || "",
-                    diningcaption: item.diningcaption || "",
-                    backgroundurl: item.backgroundimage.url || "",
-                    backgroundalt: item.backgroundimage.alt || "",
-                    backgroundcaption: item.backgroundcaption || "",
-                })) || diningdata
+            setgallery(
+                Editrestaurant[0].image?.map((item) => ({
+                    resturantimage: item.resturantimage.url || "",
+                    alt: item.resturantimage.alt|| "",
+                    caption: item.resturantimage.caption|| "",
+                })) || gallery
             );
     
-            // Update cuisines data
-            // setcuisines(
-            //     Editrestaurant[0].cuisines?.map((item) => ({
-            //         cuisinename: item.cuisinename?.split(" | ")[0] || "",
-            //         arabiccuisinename: item.cuisinename?.split(" | ")[1] || "",
-            //         cuisineimageurl: item.cuisineimage.url || "",
-            //         cuisinealt: item.cuisineimage.alt || "",
-            //         cuisinecaption: item.cuisineimage.caption || "",
-            //     })) || cuisines
+            // Update dining data
+            // setdiningdata(
+            //     Editrestaurant[0].dining?.map((item) => ({
+            //         heading: item.heading?.split(" | ")[0] || "",
+            //         arabicheading: item.heading?.split(" | ")[1] || "",
+            //         arabicdesc: item.desc?.split(" | ")[1] || "",
+            //         desc: item.desc?.split(" | ")[0] || "",
+            //         diningimageurl: item.diningimage.url || "",
+            //         diningalt: item.diningimage.alt || "",
+            //         diningcaption: item.diningcaption || "",
+            //         backgroundurl: item.backgroundimage.url || "",
+            //         backgroundalt: item.backgroundimage.alt || "",
+            //         backgroundcaption: item.backgroundcaption || "",
+            //     })) || diningdata
             // );
+    
+            // Update cuisines data
+            setcuisines(
+                Editrestaurant[0].cuisines?.map((item) => ({
+                    cuisinename: item.cuisinename?.split(" | ")[0] || "",
+                    arabiccuisinename: item.cuisinename?.split(" | ")[1] || "",
+                    cuisineimageurl: item.cuisineimage.url || "",
+                    cuisinealt: item.cuisineimage.alt || "",
+                    cuisinecaption: item.cuisineimage.caption || "",
+                })) || cuisines
+            );
+
+           
         }
     }, [Editrestaurant]);
     
@@ -235,7 +237,17 @@ export default function UpdateRestaurant() {
          console.log(Editrestaurant)
     
 
-    }, [cuisines, diningdata, gallery, cuisinedata])
+    }, [cuisines, diningdata, gallery, cuisinedata, loading])
+    if (loading) {
+        navigate("/dashboard/restaurants");
+        return (
+          <div className="flex items-center justify-center h-screen">
+            <div className="animate-spin rounded-full h-12 w-12 border-t-4 border-blue-500 border-solid"></div>
+          </div>
+        );
+
+        
+      }
 
     return (
         <div>
@@ -330,8 +342,8 @@ export default function UpdateRestaurant() {
                         )
                     }
                 />
-                <div className="flex gap-3 mt-2">
-                    <RiChatDeleteFill
+                {/* <div className="flex gap-3 mt-2"> */}
+                    {/* <RiChatDeleteFill
                         onClick={() => removeField(index, setcuisines, cuisines)}
                         color="red"
                         style={{ fontSize: '20px', cursor: 'pointer' }}
@@ -347,8 +359,8 @@ export default function UpdateRestaurant() {
                         }
                         
                         style={{ fontSize: '20px', cursor: 'pointer' }}
-                    />
-                </div>
+                    /> */}
+                {/* </div> */}
             </div>
 
             {/* Image Preview */}
@@ -360,12 +372,12 @@ export default function UpdateRestaurant() {
                         className="w-full h-32 object-cover rounded-lg"
                     />
                 ) : item.cuisineimageurl ? (
-                    <div></div>
-                    // <img
-                    //     src={`${url}/Images/${item.cuisineimageurl}`}
-                    //     alt={item.cuisinealt || `Cuisine image ${index + 1}`}
-                    //     className="w-full h-32 object-cover rounded-lg"
-                    // />
+                  
+                    <img
+                        src={`${url}/Images/${item.cuisineimageurl}`}
+                        alt={item.cuisinealt || `Cuisine image ${index + 1}`}
+                        className="w-full h-32 object-cover rounded-lg"
+                    />
                 ) : null}
             </div>
             <hr className="border-b-2 border-gray-700" />
@@ -422,9 +434,9 @@ export default function UpdateRestaurant() {
                             )
                         }
                     />
-                    <div className="flex gap-3 mt-2">
+                    {/* <div className="flex gap-3 mt-2"> */}
                         {/* Add and Remove Buttons */}
-                        <RiChatDeleteFill
+                        {/* <RiChatDeleteFill
                             onClick={() => removeField(index, setgallery, gallery)}
                             color="red"
                             style={{ fontSize: '20px', cursor: 'pointer' }}
@@ -439,8 +451,8 @@ export default function UpdateRestaurant() {
                             }
                             
                             style={{ fontSize: '20px', cursor: 'pointer' }}
-                        />
-                    </div>
+                        /> */}
+                    {/* </div> */}
                 </div>
 
                 {/* Image Preview */}
@@ -452,14 +464,12 @@ export default function UpdateRestaurant() {
                             className="w-full h-32 object-cover rounded-lg"
                         />
                     ) : item.resturantimage ? (
-                        <div>
-
-                        </div>
-                        // <img
-                        //     src={`${url}/Images/${item.resturantimage}`}
-                        //     alt={item.alt || `Restaurant image ${index + 1}`}
-                        //     className="w-full h-32 object-cover rounded-lg"
-                        // />
+                       
+                        <img
+                            src={`${url}/Images/${item.resturantimage}`}
+                            alt={item.alt || `Restaurant image ${index + 1}`}
+                            className="w-full h-32 object-cover rounded-lg"
+                        />
                     ) : null}
                 </div>
             </div>
@@ -523,7 +533,7 @@ export default function UpdateRestaurant() {
                                         onChange={handleChange}
                                         required
                                     />
-                                    {urlError && <p className="text-red-500 text-sm mt-1">{urlError}</p>}
+                                  
                                 </div>
 
 
@@ -590,8 +600,8 @@ export default function UpdateRestaurant() {
                         </div>
                         {/* Submit Button */}
                         <div className="p-5">
-                            <Button type="submit" className="w-40 bg-gray-900" color="black" fullWidth>
-                                ADD RESTURANT
+                            <Button type="submit" className="w-60 bg-gray-900" color="black" fullWidth>
+                                UPDATE RESTURANT
                             </Button>
                         </div>
                     </form>

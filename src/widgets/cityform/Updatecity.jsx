@@ -13,9 +13,9 @@ import { toast } from "react-toastify";
 
 
 export function UpdateCityModal() {
-    const { url, EditCity, SetEditCity, tostMsg,  SetTostMsg } = useContext(StoreContext);
+    const {loading, url, EditCity, SetEditCity, tostMsg,  SetTostMsg, agentid } = useContext(StoreContext);
     const [cityData, setCityData] = useState({
-        agentid: "673ef93329933f9da9d46d2a",
+        agentid: agentid,
         name: "",
         cityimage: null,
         alt: "",
@@ -32,7 +32,7 @@ export function UpdateCityModal() {
         if (EditCity && EditCity.length > 0) {
             const city = EditCity[0];
             setCityData({
-                agentid: city.agentid || "673ef93329933f9da9d46d2a",
+                agentid: city.agentid ||agentid,
                 name: city.name.split(" | ")[0] || "",
                 cityimage: null,
                 alt: city.alt || "",
@@ -44,7 +44,7 @@ export function UpdateCityModal() {
             });
             setPreviewImage(`${url}/images/${city.cityimage}` || null);
         }
-    }, [EditCity, url]);
+    }, [EditCity, url, loading]);
 
     const handleChange = (e) => {
         const { name, value } = e.target;
@@ -111,6 +111,17 @@ export function UpdateCityModal() {
         }
     };
 
+    if (loading) {
+        navigate("/dashboard/cities");
+        return (
+          <div className="flex items-center justify-center h-screen">
+            <div className="animate-spin rounded-full h-12 w-12 border-t-4 border-blue-500 border-solid"></div>
+          </div>
+        );
+
+        
+      }
+
     return (
         <>
             {/* Trigger Button */}
@@ -147,6 +158,16 @@ export function UpdateCityModal() {
                                             required
                                         />
                                        </div>
+
+                                       <div>
+                                     <label className="block text-gray-700 font-medium mb-2">Description</label>
+                                        <Textarea
+                                            label="Description"
+                                            name="description"
+                                            value={cityData.description}
+                                            onChange={handleChange}
+                                        />
+                                     </div>
                                         <div className="space-y-2">
                                             <Typography
                                                 variant="small"
@@ -180,15 +201,7 @@ export function UpdateCityModal() {
                                             required
                                         />
                                       
-                                     <div>
-                                     <label className="block text-gray-700 font-medium mb-2">Description</label>
-                                        <Textarea
-                                            label="Description"
-                                            name="description"
-                                            value={cityData.description}
-                                            onChange={handleChange}
-                                        />
-                                     </div>
+                                    
                                     </div>
 
                                     {/* Arabic Fields */}

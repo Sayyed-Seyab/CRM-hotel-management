@@ -1,21 +1,21 @@
 export const Facilities = [
     {
-      img: "/img/cappuccino.png",
-      name: "Cappuccino",
-      arabicname: "كابتشينو",
+      img: "/img/Kettle.svg",
+      name: "Kettle",
+      arabicname: "غلاية",
       alt:"Arabic name",
       
     },
     {
-      img: "/img/dumbell.png",
-      name: "Exercise practice",
-      arabicname: "ممارسة التمارين الرياضية",
+      img: "/img/Restaurant.svg",
+      name: "Restaurant",
+      arabicname: "مطعم",
       alr:"Arabic name"
     },
     {
-      img: "/img/flash.png",
-      name: "Free electricity",
-      arabicname: "كهرباء مجانية",
+      img: "/img/Slippers.svg",
+      name: "Slippers",
+      arabicname: "النعال",
       alt: "Arabic name"
     },
     {
@@ -24,25 +24,56 @@ export const Facilities = [
       arabicname: "منطقة وقوف السيارات",
       alt: "Arabic name"
     },
+    {
+      img: "/img/car-parking.svg",
+      name: "Car parking",
+      arabicname: "مواقف السيارات",
+      alt: "Arabic name"
+    },
     
     {
-      img: "/img/swimmer.png",
-      name: "Swimming Pool",
-      arabicname: "حمام السباحة",
+      img: "/img/laundry.svg",
+      name: "Laundry",
+      arabicname: "مغسلة",
       alt:"Arabic name"
     },
     {
-      img: "/img/wifi.png",
+      img: "/img/wifi.svg",
       name: "Free Wifi",
-      arabicname: "  حر واي فاي",
+      arabicname: "واي فاي",
       alt:"Arabic anme"
     },
     {
-      img: "/img/workspace.png",
-      name: "Work space",
-      arabicname: "مساحة العمل",
+      img: "/img/Room-service.svg",
+      name: "Room service",
+      arabicname: "خدمة الغرف",
       alt: "Arabic name"
     },
+    {
+      img: "/img/toothpaste.svg",
+      name: "Toiletries",
+      arabicname: "أدوات النظافة",
+      alt: "Arabic name"
+    },
+    {
+      img: "/img/airmatters.svg",
+      name: "Air matters",
+      arabicname:"الهواء مهم",
+      alt: "Arabic name"
+    },
+    {
+      img: "/img/window.svg",
+      name: "Window",
+      arabicname: "نافذة",
+      alt: "Arabic name"
+    },
+    {
+      img: "/img/hairdryer.svg",
+      name: "Hair dryer",
+      arabicname: "مجفف شعر",
+      alt: "Arabic name"
+    },
+    
    
   ];
   

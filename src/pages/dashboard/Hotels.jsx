@@ -23,7 +23,7 @@ import './hotel.css'
 
 
 export function Hotels() {
-    const { hotels, cities, fetchHotels, url, language, setLanguage, EditCity, SetEditHotel, tostMsg, SetTostMsg, HotelDataAllLang } = useContext(StoreContext);
+    const {hotelloading, setloading, hotels, cities, fetchHotels, url, language, setLanguage, EditCity, SetEditHotel, tostMsg, SetTostMsg, HotelDataAllLang } = useContext(StoreContext);
     const navigate = useNavigate();
     const [Cities, setCities] = useState([]); // State for cities data
     const [currentPage, setCurrentPage] = useState(1);
@@ -33,7 +33,7 @@ export function Hotels() {
     const [Hotelid, SetHotelId] = useState('')
 
 
-    const rowsPerPage = 5; // Number of rows per page
+    const rowsPerPage = 10; // Number of rows per page
     const agentid = "673ef93329933f9da9d46d2a"; // Replace with dynamic agentid if needed
 
 
@@ -85,6 +85,7 @@ export function Hotels() {
     const handleUpdateHoel = (hotel) => {
         const findhotel = HotelDataAllLang.filter((item) => item._id === hotel._id)
         SetEditHotel(findhotel)
+        setloading(false)
         navigate("/dashboard/update-hotel")
     }
 
@@ -117,6 +118,14 @@ export function Hotels() {
     const policypage = () => {
         navigate('/dashboard/policies')
     }
+    if (hotelloading) {
+        return (
+          <div className="flex items-center justify-center h-screen">
+            <div className="animate-spin rounded-full h-12 w-12 border-t-4 border-blue-500 border-solid"></div>
+          </div>
+        );
+        
+      }
 
 
     return (
@@ -146,7 +155,16 @@ export function Hotels() {
                     </div>
                 </CardHeader>
                 <CardBody className="max-h-[415px] overflow-y-auto px-0 pt-0 pb-2">
-                    <table className="w-full min-h-[0px] table-auto">
+                     {currentData.length === 0 ? (
+                                    <Typography
+                                        className="text-center text-gray-500 font-medium py-8"
+                                        variant="h6"
+                                    >
+                                        No Hotels available.
+                                    </Typography>
+                                ) : (
+                                    <>
+                                     <table className="w-full min-h-[0px] table-auto">
                         <thead>
                             <tr>
                                 {["Image", "Name", "City", "Brand", "Description",  "Action"].map((header) => (
@@ -191,7 +209,7 @@ export function Hotels() {
                                         {/* Brand Name */}
                                         <td className="px-5 border-b border-blue-gray-50 min-h-[100px]">
                                             <Typography variant="small" color="blue-gray" className="font-semibold">
-                                                {city ? city.name : "City not found"}
+                                                {hotel ? hotel.city : "City not found"}
                                             </Typography>
                                         </td>
 
@@ -205,7 +223,7 @@ export function Hotels() {
                                         {/* description */}
                                         {/* description */}
                                         <td className="px-5 w-60 border-b border-blue-gray-50 min-h-[100px]">
-                                            <div className="overflow-y-auto max-h-[50px]">
+                                            <div className="overflow-y-auto  max-h-[50px]">
                                                 <Typography
                                                     variant="small"
                                                     color="blue-gray"
@@ -275,6 +293,9 @@ export function Hotels() {
                             Next
                         </Typography>
                     </div>
+                                    </>
+                                )}
+                   
                 </CardBody>
             </Card>
         </div>

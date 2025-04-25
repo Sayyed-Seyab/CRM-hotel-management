@@ -21,7 +21,7 @@ import { toast } from "react-toastify";
 
 
 export function Loyalty() {
-    const {fetchloyalty,loyalty, ErrortMsg, SetErrortMsg,LoyaltyAllLang, setCities, url, language, setLanguage, EditCity, Editloyalty, setEditLoyalty, tostMsg, SetTostMsg } = useContext(StoreContext);
+    const {loyaltyloading, setloading, fetchloyalty,loyalty, ErrortMsg, SetErrortMsg,LoyaltyAllLang, setCities, url, language, setLanguage, EditCity, Editloyalty, setEditLoyalty, tostMsg, SetTostMsg } = useContext(StoreContext);
     const navigate = useNavigate();
     const [currentPage, setCurrentPage] = useState(1);
     const [isAddCityModalOpen, setIsAddCityModalOpen] = useState(false);
@@ -30,7 +30,7 @@ export function Loyalty() {
     const [LoyaltyId, SetLoyaltyId] = useState('')
 
 
-    const rowsPerPage = 5; // Number of rows per page
+    const rowsPerPage = 10; // Number of rows per page
    
 
     useEffect(() => {
@@ -75,6 +75,7 @@ export function Loyalty() {
     const handleUpdateLoyalty = (loyalty) => {
         const findloyalty = LoyaltyAllLang.filter((item) => item._id === loyalty._id)
          setEditLoyalty(findloyalty)
+         setloading(false)
         navigate("/dashboard/update-loyalty")
     }
 
@@ -88,46 +89,63 @@ export function Loyalty() {
 
             const response = await axios.delete(`${url}/api/admin/loyaltyplan/${loyalty._id}`)
             if (response.data.success) {
+                fetchloyalty();
                 toast.success(response.data.message)
                 // setIsDltCityModalOpen(false)
-                fetchloyalty();
 
             }
         } catch (error) {
             toast.error(error)
         }
     }
-
+    if (loyaltyloading) {
+        return (
+          <div className="flex items-center justify-center h-screen">
+            <div className="animate-spin rounded-full h-12 w-12 border-t-4 border-blue-500 border-solid"></div>
+          </div>
+        );
+        
+      }
 
     return (
         <div className="mt-12 mb-8 flex flex-col gap-12">
-            <Card>
-                <CardHeader
-                    variant="gradient"
-                    color="gray"
-                    className="mb-8 p-6 flex justify-between"
-                >
-                    <Typography variant="h6" color="white">
-                       Loyalty Table
-                    </Typography>
+    <Card>
+        <CardHeader
+            variant="gradient"
+            color="gray"
+            className="mb-8 p-6 flex justify-between"
+        >
+            <Typography variant="h6" color="white">
+                Loyalty Table
+            </Typography>
 
-                    <div className="flex items-center gap-4">
-                        {/* Trigger Button */}
-                        <Button
-                            variant="text"
-                            color="light-gray"
-                            onClick={handleAddCity}
-                            className="bg-gray-500  hover:bg-gray-600 text-white hidden items-center gap-1 px-4 xl:flex normal-case"
-                        >
-                            ADD LOYALTY
-                        </Button>
-                    </div>
-                </CardHeader>
-                <CardBody className="max-h-[415px] overflow-y-auto px-0 pt-0 pb-2">
+            <div className="flex items-center gap-4">
+                {/* Trigger Button */}
+                <Button
+                    variant="text"
+                    color="light-gray"
+                    onClick={handleAddCity}
+                    className="bg-gray-500 hover:bg-gray-600 text-white hidden items-center gap-1 px-4 xl:flex normal-case"
+                >
+                    ADD LOYALTY
+                </Button>
+            </div>
+        </CardHeader>
+        <CardBody className="max-h-[415px] overflow-y-auto px-0 pt-0 pb-2">
+            {/* Conditional rendering for the message */}
+            {currentData.length === 0 ? (
+                <Typography
+                    className="text-center text-gray-500 font-medium py-8"
+                    variant="h6"
+                >
+                    No loyalty plans available.
+                </Typography>
+            ) : (
+                <>
                     <table className="w-full min-h-[0px] table-auto">
                         <thead>
                             <tr>
-                                {["Image", "Name", "Points-Per-SAR","Min-Points-Redeem", "Action"].map((header) => (
+                                {["Image", "Name", "Points-Per-SAR", "Min-Points-Redeem", "Action"].map((header) => (
                                     <th
                                         key={header}
                                         className="border-b border-blue-gray-50 py-3 px-5 text-left"
@@ -156,22 +174,22 @@ export function Loyalty() {
                                         />
                                     </td>
 
-                                    {/* loyalty Name */}
+                                    {/* Loyalty Name */}
                                     <td className="px-5 border-b border-blue-gray-50 min-h-[100px]">
                                         <Typography variant="small" color="blue-gray" className="font-semibold">
                                             {loyalty.plantype}
                                         </Typography>
                                     </td>
 
-                                    {/* Ern point per sar */}
+                                    {/* Earn point per SAR */}
                                     <td className="px-5 border-b border-blue-gray-50 min-h-[100px]">
                                         <Typography className="text-xs font-normal text-blue-gray-500">
                                             {loyalty.valueearned}
                                         </Typography>
                                     </td>
 
-                                     {/* Min points to redeem */}
-                                     <td className="px-5 border-b border-blue-gray-50 min-h-[100px]">
+                                    {/* Min points to redeem */}
+                                    <td className="px-5 border-b border-blue-gray-50 min-h-[100px]">
                                         <Typography className="text-xs font-normal text-blue-gray-500">
                                             {loyalty.minimumpointstoredeem}
                                         </Typography>
@@ -200,14 +218,14 @@ export function Loyalty() {
                                 </tr>
                             ))}
                         </tbody>
-
                     </table>
+
                     {/* Pagination */}
                     <div className="flex justify-between items-center mt-4">
                         <Typography
                             onClick={() => handlePageChange(currentPage - 1)}
                             disabled={currentPage === 1}
-                            className="text-sm hover:text-blue-gray-500 font-bold rounded-lg p-1 cursor-pointer  ml-4"
+                            className="text-sm hover:text-blue-gray-500 font-bold rounded-lg p-1 cursor-pointer ml-4"
                             size="sm"
                         >
                             Previous
@@ -228,15 +246,18 @@ export function Loyalty() {
                         <Typography
                             onClick={() => handlePageChange(currentPage + 1)}
                             disabled={currentPage === totalPages}
-                            className="text-sm hover:text-blue-gray-500 font-bold rounded-lg p-1 cursor-pointer  mr-5"
+                            className="text-sm hover:text-blue-gray-500 font-bold rounded-lg p-1 cursor-pointer mr-5"
                             size="sm"
                         >
                             Next
                         </Typography>
                     </div>
-                </CardBody>
-            </Card>
-        </div>
+                </>
+            )}
+        </CardBody>
+    </Card>
+</div>
+
     );
 }
 

@@ -22,7 +22,7 @@ import AlertRoomMsg from "@/widgets/Roomfoms/AlertRoomMsg";
 
 
 export function Rooms() {
-    const {fetchRooms, cities, Rooms, RoomAllLang, hotels,  SetEditroom, setRoomDataAllLang,  url, language, setLanguage,  tostMsg, SetTostMsg } = useContext(StoreContext);
+    const {roomloading, setloading, fetchRooms, cities, Rooms, RoomAllLang, hotels,  SetEditroom, setRoomDataAllLang,  url, language, setLanguage,  tostMsg, SetTostMsg } = useContext(StoreContext);
     const navigate = useNavigate();
     const [currentPage, setCurrentPage] = useState(1);
     const [isAddCityModalOpen, setIsAddCityModalOpen] = useState(false);
@@ -31,7 +31,7 @@ export function Rooms() {
     const [RoomId, SetRoomId] = useState('')
 
 
-    const rowsPerPage = 5; // Number of rows per page
+    const rowsPerPage = 10; // Number of rows per page
    
 
     useEffect(() => {
@@ -75,6 +75,7 @@ export function Rooms() {
     };
     const handleUpdateRoom = (room) => {
         console.log(room)
+        setloading(false)
         // setIsUpdateRoomModalOpen(true)
         const findroom = RoomAllLang.filter((item) => item._id === room._id)
         SetEditroom(findroom)
@@ -92,15 +93,23 @@ export function Rooms() {
             const response = await axios.delete(`${url}/api/admin/deleteroom/${RoomId}`)
             if (response.data.success) {
                 toast.success(response.data.message)
-                setDltRoomModalOpen(false)
                 fetchRooms();
+                setDltRoomModalOpen(false)
+               
 
             }
         } catch (error) {
             toast.error(response.data.message)
         }
     }
-
+    if (roomloading) {
+        return (
+          <div className="flex items-center justify-center h-screen">
+            <div className="animate-spin rounded-full h-12 w-12 border-t-4 border-blue-500 border-solid"></div>
+          </div>
+        );
+        
+      }
     console.log(Rooms)
     return (
         <div className="mt-12 mb-8 flex flex-col gap-12">
@@ -111,7 +120,7 @@ export function Rooms() {
                     className="mb-8 p-6 flex justify-between"
                 >
                     <Typography variant="h6" color="white">
-                        Cities Table
+                       Rooms Table
                     </Typography>
 
                     <div className="flex items-center gap-4">
@@ -127,7 +136,16 @@ export function Rooms() {
                     </div>
                 </CardHeader>
                 <CardBody className="max-h-[415px] overflow-y-auto px-0 pt-0 pb-2">
-                    <table className="w-full min-h-[0px] table-auto">
+                     {currentData.length === 0 ? (
+                                    <Typography
+                                        className="text-center text-gray-500 font-medium py-8"
+                                        variant="h6"
+                                    >
+                                        No Rooms available.
+                                    </Typography>
+                                ) : (
+                                    <>
+                                        <table className="w-full min-h-[0px] table-auto">
                         <thead>
                             <tr>
                                 {["Image", "Name", "Price-Per-Night", "Max-Occupancy", "Hotel", "Action"].map((header) => (
@@ -255,6 +273,9 @@ export function Rooms() {
                             Next
                         </Typography>
                     </div>
+                                    </>
+                                )}
+                
                 </CardBody>
             </Card>
         </div>

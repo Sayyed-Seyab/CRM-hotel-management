@@ -300,7 +300,7 @@ export default function AddRestaurant() {
                                                     }
                                                 />
 
-                                                <div className="flex gap-3 mt-2">
+                                                {/* <div className="flex gap-3 mt-2">
                                                     <RiChatDeleteFill
                                                         onClick={() => removeField(
                                                             index,
@@ -321,7 +321,7 @@ export default function AddRestaurant() {
                                                         
                                                         style={{ fontSize: '20px', cursor: 'pointer' }}
                                                     />
-                                                </div>
+                                                </div> */}
                                             </div>
                                             <hr className="border-b-2 border-gray-700" />
                                            
@@ -383,9 +383,11 @@ export default function AddRestaurant() {
                                                             )
                                                         }
                                                     />
-                                                    <div className="flex gap-3 mt-2">
-                                                        {/* Add and Remove Buttons */}
-                                                        <RiChatDeleteFill
+                                                    
+                                                    <div>
+                                                    {/* <div className="flex gap-3 mt-2"> */}
+                                                       
+                                                        {/* <RiChatDeleteFill
                                                             onClick={() => removeField(index, setgallery, gallery)}
                                                             color="red"
                                                             style={{ fontSize: '20px', cursor: 'pointer' }}
@@ -400,7 +402,8 @@ export default function AddRestaurant() {
                                                                 })}
                                                             
                                                             style={{fontSize:'20px',  cursor: 'pointer' }}
-                                                        />
+                                                        /> */}
+                                                    {/* </div> */}
                                                     </div>
 
                                                 </div>
@@ -419,6 +422,7 @@ export default function AddRestaurant() {
                                     <label className="block text-gray-700 font-medium mb-2">Select City</label>
                                     <select
                                         name="cityid"
+                                        value={cuisinedata.cityid}
                                         onChange={handleChange}
                                         className="w-full border border-gray-300 rounded-lg px-4 py-2 bg-white focus:ring focus:ring-gray-300"
                                         required
@@ -439,6 +443,7 @@ export default function AddRestaurant() {
                                     <label className="block text-gray-700 font-medium mb-2">Select Hotel</label>
                                     <select
                                         name="hotelid"
+                                        value={cuisinedata.hotelid}
                                         onChange={handleChange}
                                         className="w-full border border-gray-300 rounded-lg px-4 py-2 bg-white focus:ring focus:ring-gray-300"
                                         required
